@@ -1,0 +1,33 @@
+﻿@page
+@using MiniJob.Localization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Authorization
+@using MiniJob.Permissions
+@model MiniJob.Web.Pages.Jobs.JobInfos.IndexModel
+@inject IStringLocalizer<MiniJobResource> L
+@inject IAuthorizationService AuthorizationService
+@section scripts
+{
+    <abp-script src="/Pages/Jobs/JobInfos/Index.js" />
+}
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>@L["JobInfos"]</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-right">
+                @if (await AuthorizationService.IsGrantedAsync(MiniJobPermissions.JobInfos.Create))
+                {
+                    <abp-button id="NewJobInfoButton"
+                                text="@L["NewJobInfo"].Value"
+                                icon="plus"
+                                button-type="Primary" />
+                }
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+    <abp-card-body>
+        <abp-table striped-rows="true" id="JobInfosTable"></abp-table>
+    </abp-card-body>
+</abp-card>

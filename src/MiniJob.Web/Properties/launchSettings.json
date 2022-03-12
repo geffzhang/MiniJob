@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "MiniJob.Web": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:44386/"
+    },
+    "Dapr": {
+      "commandName": "Executable",
+      "executablePath": "dapr",
+      "commandLineArgs": "run --app-id minijob --app-port 9999 -- dotnet MiniJob.Web.dll"
+    }
+  }
+}
