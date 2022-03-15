@@ -1,6 +1,5 @@
-﻿namespace MiniJob
+﻿namespace MiniJob;
+
+public class MiniJobCommonConsts
 {
-    public class MiniJobCommonConsts
-    {
-    }
 }

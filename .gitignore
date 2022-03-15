@@ -252,6 +252,7 @@ paket-files/
 *.sln.iml
 
 # MiniJob
+Logs/
 src/MiniJob.Web/Logs/*
 src/MiniJob.Web.Host/Logs/*
 src/MiniJob.IdentityServer/Logs/*

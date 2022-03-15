@@ -1,15 +1,14 @@
 ﻿using MiniJob.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.RazorPages;
 
-namespace MiniJob.Web.Pages
+namespace MiniJob.Web.Pages;
+
+/* Inherit your PageModel classes from this class.
+ */
+public abstract class MiniJobPageModel : AbpPageModel
 {
-    /* Inherit your PageModel classes from this class.
-     */
-    public abstract class MiniJobPageModel : AbpPageModel
+    protected MiniJobPageModel()
     {
-        protected MiniJobPageModel()
-        {
-            LocalizationResourceType = typeof(MiniJobResource);
-        }
+        LocalizationResourceType = typeof(MiniJobResource);
     }
 }

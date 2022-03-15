@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using MiniJob.Jobs;
 
-namespace MiniJob.Web
+namespace MiniJob.Web;
+
+public class MiniJobWebAutoMapperProfile : Profile
 {
-    public class MiniJobWebAutoMapperProfile : Profile
+    public MiniJobWebAutoMapperProfile()
     {
-        public MiniJobWebAutoMapperProfile()
-        {
-            //Define your AutoMapper configuration here for the Web project.
-            CreateMap<AppInfoDto, CreateUpdateAppInfoDto>();
-        }
+        //Define your AutoMapper configuration here for the Web project.
+        CreateMap<AppInfoDto, CreateUpdateAppInfoDto>();
     }
 }

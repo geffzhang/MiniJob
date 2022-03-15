@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace MiniJob.Models.Test;
 
-namespace MiniJob.Models.Test
+public class TestModel
 {
-    public class TestModel
-    {
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public DateTime BirthDate { get; set; }
-    }
+    public DateTime BirthDate { get; set; }
 }

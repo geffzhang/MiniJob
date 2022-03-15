@@ -1,30 +1,28 @@
 using Microsoft.AspNetCore.Mvc;
 using MiniJob.Jobs;
-using System.Threading.Tasks;
 
-namespace MiniJob.Web.Pages.Jobs.JobInfos
+namespace MiniJob.Web.Pages.Jobs.JobInfos;
+
+public class CreateModalModel : MiniJobPageModel
 {
-    public class CreateModalModel : MiniJobPageModel
+    [BindProperty]
+    public CreateUpdateJobInfoDto JobInfo { get; set; }
+
+    private readonly IJobInfoAppService _jobInfoAppService;
+
+    public CreateModalModel(IJobInfoAppService jobInfoAppService)
     {
-        [BindProperty]
-        public CreateUpdateJobInfoDto JobInfo { get; set; }
+        _jobInfoAppService = jobInfoAppService;
+    }
 
-        private readonly IJobInfoAppService _jobInfoAppService;
+    public void OnGet()
+    {
+        JobInfo = new CreateUpdateJobInfoDto();
+    }
 
-        public CreateModalModel(IJobInfoAppService jobInfoAppService)
-        {
-            _jobInfoAppService = jobInfoAppService;
-        }
-
-        public void OnGet()
-        {
-            JobInfo = new CreateUpdateJobInfoDto();
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            await _jobInfoAppService.CreateAsync(JobInfo);
-            return NoContent();
-        }
+    public async Task<IActionResult> OnPostAsync()
+    {
+        await _jobInfoAppService.CreateAsync(JobInfo);
+        return NoContent();
     }
 }

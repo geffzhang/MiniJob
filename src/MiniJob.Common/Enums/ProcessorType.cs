@@ -1,33 +1,32 @@
-﻿namespace MiniJob.Enums
+﻿namespace MiniJob.Enums;
+
+/// <summary>
+/// 执行器类型
+/// </summary>
+public enum ProcessorType
 {
     /// <summary>
-    /// 执行器类型
+    /// C#
     /// </summary>
-    public enum ProcessorType
-    {
-        /// <summary>
-        /// C#
-        /// </summary>
-        CSharp,
+    CSharp,
 
-        /// <summary>
-        /// 脚本
-        /// </summary>
-        Shell,
+    /// <summary>
+    /// 脚本
+    /// </summary>
+    Shell,
 
-        /// <summary>
-        /// Python
-        /// </summary>
-        Python,
+    /// <summary>
+    /// Python
+    /// </summary>
+    Python,
 
-        /// <summary>
-        /// Http
-        /// </summary>
-        Http,
+    /// <summary>
+    /// Http
+    /// </summary>
+    Http,
 
-        /// <summary>
-        /// SQL语句
-        /// </summary>
-        SQL
-    }
+    /// <summary>
+    /// SQL语句
+    /// </summary>
+    SQL
 }

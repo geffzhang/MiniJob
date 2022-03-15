@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-	  <RootNamespace>MiniJob</RootNamespace>
+	<RootNamespace>MiniJob</RootNamespace>
+	<ImplicitUsings>true</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>

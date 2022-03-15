@@ -1,28 +1,26 @@
-﻿using System;
-using Volo.Abp.Domain.Entities;
+﻿using Volo.Abp.Domain.Entities;
 
-namespace MiniJob.Jobs
+namespace MiniJob.Jobs;
+
+/// <summary>
+/// 告警用户
+/// </summary>
+public class JobInfoIdentityUser : Entity
 {
-    /// <summary>
-    /// 告警用户
-    /// </summary>
-    public class JobInfoIdentityUser : Entity
+    public Guid JobInfoId { get; protected set; }
+
+    public Guid UserId { get; protected set; }
+
+    protected JobInfoIdentityUser() { }
+
+    public JobInfoIdentityUser(Guid jobInfoId, Guid userId)
     {
-        public Guid JobInfoId { get; protected set; }
+        JobInfoId = jobInfoId;
+        UserId = userId;
+    }
 
-        public Guid UserId { get; protected set; }
-
-        protected JobInfoIdentityUser() { }
-
-        public JobInfoIdentityUser(Guid jobInfoId, Guid userId)
-        {
-            JobInfoId = jobInfoId;
-            UserId = userId;
-        }
-
-        public override object[] GetKeys()
-        {
-            return new object[] { JobInfoId, UserId };
-        }
+    public override object[] GetKeys()
+    {
+        return new object[] { JobInfoId, UserId };
     }
 }

@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿namespace MiniJob.Data;
 
-namespace MiniJob.Data
+public interface IMiniJobDbSchemaMigrator
 {
-    public interface IMiniJobDbSchemaMigrator
-    {
-        Task MigrateAsync();
-    }
+    Task MigrateAsync();
 }

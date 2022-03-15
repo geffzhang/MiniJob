@@ -9,34 +9,33 @@ using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 
-namespace MiniJob
-{
-    [DependsOn(
-        typeof(MiniJobApplicationContractsModule),
-        typeof(AbpAccountHttpApiModule),
-        typeof(AbpIdentityHttpApiModule),
-        typeof(AbpPermissionManagementHttpApiModule),
-        typeof(AbpTenantManagementHttpApiModule),
-        typeof(AbpFeatureManagementHttpApiModule),
-        typeof(AbpSettingManagementHttpApiModule)
-        )]
-    public class MiniJobHttpApiModule : AbpModule
-    {
-        public override void ConfigureServices(ServiceConfigurationContext context)
-        {
-            ConfigureLocalization();
-        }
+namespace MiniJob;
 
-        private void ConfigureLocalization()
+[DependsOn(
+    typeof(MiniJobApplicationContractsModule),
+    typeof(AbpAccountHttpApiModule),
+    typeof(AbpIdentityHttpApiModule),
+    typeof(AbpPermissionManagementHttpApiModule),
+    typeof(AbpTenantManagementHttpApiModule),
+    typeof(AbpFeatureManagementHttpApiModule),
+    typeof(AbpSettingManagementHttpApiModule)
+    )]
+public class MiniJobHttpApiModule : AbpModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        ConfigureLocalization();
+    }
+
+    private void ConfigureLocalization()
+    {
+        Configure<AbpLocalizationOptions>(options =>
         {
-            Configure<AbpLocalizationOptions>(options =>
-            {
-                options.Resources
-                    .Get<MiniJobResource>()
-                    .AddBaseTypes(
-                        typeof(AbpUiResource)
-                    );
-            });
-        }
+            options.Resources
+                .Get<MiniJobResource>()
+                .AddBaseTypes(
+                    typeof(AbpUiResource)
+                );
+        });
     }
 }

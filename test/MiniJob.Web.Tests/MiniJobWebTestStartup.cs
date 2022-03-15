@@ -1,21 +1,18 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using Volo.Abp;
 
-namespace MiniJob
+namespace MiniJob;
+
+public class MiniJobWebTestStartup
 {
-    public class MiniJobWebTestStartup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddApplication<MiniJobWebTestModule>();
-        }
+        services.AddApplication<MiniJobWebTestModule>();
+    }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
-        {
-            app.InitializeApplication();
-        }
+    public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+    {
+        app.InitializeApplication();
     }
 }

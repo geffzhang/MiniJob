@@ -5,38 +5,37 @@ using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp;
 
-namespace MiniJob.HttpApi.Client.ConsoleTestApp
+namespace MiniJob.HttpApi.Client.ConsoleTestApp;
+
+public class ConsoleTestAppHostedService : IHostedService
 {
-    public class ConsoleTestAppHostedService : IHostedService
+    private readonly IConfiguration _configuration;
+
+    public ConsoleTestAppHostedService(
+        IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public ConsoleTestAppHostedService(
-            IConfiguration configuration)
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        using (var application = await AbpApplicationFactory.CreateAsync<MiniJobConsoleApiClientModule>(options =>
         {
-            _configuration = configuration;
-        }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
+            options.Services.ReplaceConfiguration(_configuration);
+            options.UseAutofac();
+        }))
         {
-            using (var application = await AbpApplicationFactory.CreateAsync<MiniJobConsoleApiClientModule>(options =>
-            {
-                options.Services.ReplaceConfiguration(_configuration);
-                options.UseAutofac();
-            }))
-            {
-                await application.InitializeAsync();
+            await application.InitializeAsync();
 
-                var demo = application.ServiceProvider.GetRequiredService<ClientDemoService>();
-                await demo.RunAsync();
+            var demo = application.ServiceProvider.GetRequiredService<ClientDemoService>();
+            await demo.RunAsync();
 
-                await application.ShutdownAsync();
-            }
+            await application.ShutdownAsync();
         }
+    }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }

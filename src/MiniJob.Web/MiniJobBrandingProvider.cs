@@ -1,11 +1,10 @@
 ﻿using Volo.Abp.DependencyInjection;
 using Volo.Abp.Ui.Branding;
 
-namespace MiniJob.Web
+namespace MiniJob.Web;
+
+[Dependency(ReplaceServices = true)]
+public class MiniJobBrandingProvider : DefaultBrandingProvider
 {
-    [Dependency(ReplaceServices = true)]
-    public class MiniJobBrandingProvider : DefaultBrandingProvider
-    {
-        public override string AppName => "MiniJob";
-    }
+    public override string AppName => "MiniJob";
 }

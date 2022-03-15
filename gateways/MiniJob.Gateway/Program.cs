@@ -1,13 +1,7 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MiniJob.Dapr;
 using Serilog;
 using Serilog.Events;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +15,9 @@ Log.Logger = new LoggerConfiguration()
 #endif
     .Enrich.FromLogContext()
     .WriteTo.Async(c => c.File("Logs/logs.txt", rollingInterval: RollingInterval.Day))
+#if DEBUG
     .WriteTo.Async(c => c.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}"))
+#endif
     .ReadFrom.Configuration(builder.Configuration, "Serilog")
     .CreateLogger();
 
@@ -44,7 +40,7 @@ try
         endpoints.MapReverseProxy();
     });
 
-    app.MapGet("/", context => Task.FromResult("Hello MiniJob Gateway!"));
+    app.MapGet("/", () => "Hello MiniJob Gateway!");
 
     app.Lifetime.ApplicationStarted.Register(() =>
     {
@@ -52,7 +48,7 @@ try
         options.RunDaprSidecar(app.Urls.FirstOrDefault());
     });
 
-    app.Run();
+    app.Run("http://localhost:9000");
 }
 catch (Exception ex)
 {

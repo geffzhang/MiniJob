@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace MiniJob;
 
-namespace MiniJob
+public static class MiniJobConsts
 {
-    public static class MiniJobConsts
-    {
-        public const string DbTablePrefix = "MiniJob";
+    public const string DbTablePrefix = "MiniJob";
 
-        public const string DbSchema = null;
+    public const string DbSchema = null;
 
-        public static TimeSpan WorkerTimeout = TimeSpan.FromSeconds(30);
-    }
+    public static TimeSpan WorkerTimeout = TimeSpan.FromSeconds(30);
 }

@@ -1,88 +1,81 @@
 ﻿using MiniJob.Enums;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
-namespace MiniJob.Jobs
+namespace MiniJob.Jobs;
+
+/// <summary>
+/// 任务运行实例
+/// </summary>
+public class JobInstance : AuditedAggregateRoot<Guid>, IMultiTenant
 {
     /// <summary>
-    /// 任务运行实例
+    /// 租户ID
     /// </summary>
-    public class JobInstance : AuditedAggregateRoot<Guid>, IMultiTenant
+    public virtual Guid? TenantId { get; protected set; }
+
+    /// <summary>
+    /// 任务
+    /// </summary>
+    public virtual JobInfo JobInfo { get; set; }
+
+    /// <summary>
+    /// 任务ID
+    /// </summary>
+    public virtual Guid JobInfoId { get; protected set; }
+
+    /// <summary>
+    /// 任务实例参数
+    /// </summary>
+    public virtual string InstanceArgs { get; set; }
+
+    /// <summary>
+    /// 任务状态
+    /// </summary>
+    public virtual InstanceStatus InstanceStatus { get; set; }
+
+    /// <summary>
+    /// 执行结果（允许存储稍大的结果）
+    /// </summary>
+    public virtual string Result { get; set; }
+
+    /// <summary>
+    /// 预计触发时间
+    /// </summary>
+    public virtual DateTime ExpectedTriggerTime { get; set; }
+
+    /// <summary>
+    /// 实际触发时间
+    /// </summary>
+    public virtual DateTime? ActualTriggerTime { get; set; }
+
+    /// <summary>
+    /// 重试次数
+    /// </summary>
+    public virtual int TryCount { get; set; }
+
+    protected JobInstance()
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public virtual Guid? TenantId { get; protected set; }
+    }
 
-        /// <summary>
-        /// 任务
-        /// </summary>
-        public virtual JobInfo JobInfo { get; set; }
+    public JobInstance(
+        Guid id,
+        Guid jobId,
+        DateTime nextTriggerTime,
+        string instanceArgs = null,
+        [MaybeNull] Guid? tenantId = null)
+        : base(id)
+    {
+        JobInfoId = jobId;
+        TenantId = tenantId;
+        ExpectedTriggerTime = nextTriggerTime;
+        InstanceArgs = instanceArgs;
+        InstanceStatus = InstanceStatus.WaitingDispatch;
+    }
 
-        /// <summary>
-        /// 任务ID
-        /// </summary>
-        public virtual Guid JobInfoId { get; protected set; }
-
-        /// <summary>
-        /// 工作流实例ID
-        /// </summary>
-        public virtual Guid? WorkflowInstanceId { get; protected set; }
-
-        /// <summary>
-        /// 任务实例参数
-        /// </summary>
-        public virtual string InstanceArgs { get; set; }
-
-        /// <summary>
-        /// 任务状态
-        /// </summary>
-        public virtual InstanceStatus InstanceStatus { get; set; }
-
-        /// <summary>
-        /// 执行结果（允许存储稍大的结果）
-        /// </summary>
-        public virtual string Result { get; set; }
-
-        /// <summary>
-        /// 预计触发时间
-        /// </summary>
-        public virtual DateTime ExpectedTriggerTime { get; set; }
-
-        /// <summary>
-        /// 实际触发时间
-        /// </summary>
-        public virtual DateTime? ActualTriggerTime { get; set; }
-
-        /// <summary>
-        /// 重试次数
-        /// </summary>
-        public virtual int TryCount { get; set; }
-
-        protected JobInstance()
-        {
-        }
-
-        public JobInstance(
-            Guid id,
-            Guid jobId,
-            DateTime nextTriggerTime,
-            string instanceArgs = null,
-            [MaybeNull] Guid? tenantId = null)
-            : base(id)
-        {
-            JobInfoId = jobId;
-            TenantId = tenantId;
-            ExpectedTriggerTime = nextTriggerTime;
-            InstanceArgs = instanceArgs;
-            InstanceStatus = InstanceStatus.WaitingDispatch;
-        }
-
-        public override string ToString()
-        {
-            return $"{base.ToString()}, JobId = {JobInfoId}, Status = {InstanceStatus}";
-        }
+    public override string ToString()
+    {
+        return $"{base.ToString()}, JobId = {JobInfoId}, Status = {InstanceStatus}";
     }
 }

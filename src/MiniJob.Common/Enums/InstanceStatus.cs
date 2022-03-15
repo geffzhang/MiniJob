@@ -1,43 +1,42 @@
-﻿namespace MiniJob.Enums
+﻿namespace MiniJob.Enums;
+
+/// <summary>
+/// 任务实例状态
+/// </summary>
+public enum InstanceStatus
 {
     /// <summary>
-    /// 任务实例状态
+    /// 等待派发
     /// </summary>
-    public enum InstanceStatus
-    {
-        /// <summary>
-        /// 等待派发
-        /// </summary>
-        WaitingDispatch,
+    WaitingDispatch,
 
-        /// <summary>
-        /// 等待Worker接收
-        /// </summary>
-        WaitingWorkerReceive,
+    /// <summary>
+    /// 等待Worker接收
+    /// </summary>
+    WaitingWorkerReceive,
 
-        /// <summary>
-        /// 运行中
-        /// </summary>
-        Runing,
+    /// <summary>
+    /// 运行中
+    /// </summary>
+    Runing,
 
-        /// <summary>
-        /// 失败
-        /// </summary>
-        Failed,
+    /// <summary>
+    /// 失败
+    /// </summary>
+    Failed,
 
-        /// <summary>
-        /// 成功
-        /// </summary>
-        Succeed,
+    /// <summary>
+    /// 成功
+    /// </summary>
+    Succeed,
 
-        /// <summary>
-        /// 取消
-        /// </summary>
-        Canceled,
+    /// <summary>
+    /// 取消
+    /// </summary>
+    Canceled,
 
-        /// <summary>
-        /// 手动停止
-        /// </summary>
-        Stoped
-    }
+    /// <summary>
+    /// 手动停止
+    /// </summary>
+    Stoped
 }

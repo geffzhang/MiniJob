@@ -1,20 +1,18 @@
 ﻿using Dapr.Actors.Runtime;
-using System;
 
-namespace MiniJob.Dapr.Actors
+namespace MiniJob.Dapr.Actors;
+
+internal class MiniJobActorActivatorFactory : ActorActivatorFactory
 {
-    internal class MiniJobActorActivatorFactory : ActorActivatorFactory
+    private readonly IServiceProvider services;
+
+    public MiniJobActorActivatorFactory(IServiceProvider services)
     {
-        private readonly IServiceProvider services;
+        this.services = services;
+    }
 
-        public MiniJobActorActivatorFactory(IServiceProvider services)
-        {
-            this.services = services;
-        }
-
-        public override ActorActivator CreateActivator(ActorTypeInformation type)
-        {
-            return new MiniJobActorActivator(services, type);
-        }
+    public override ActorActivator CreateActivator(ActorTypeInformation type)
+    {
+        return new MiniJobActorActivator(services, type);
     }
 }

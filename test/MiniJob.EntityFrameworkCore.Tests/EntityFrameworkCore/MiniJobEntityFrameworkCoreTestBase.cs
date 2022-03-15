@@ -1,9 +1,6 @@
-﻿using Volo.Abp;
+﻿namespace MiniJob.EntityFrameworkCore;
 
-namespace MiniJob.EntityFrameworkCore
+public abstract class MiniJobEntityFrameworkCoreTestBase : MiniJobTestBase<MiniJobEntityFrameworkCoreTestModule>
 {
-    public abstract class MiniJobEntityFrameworkCoreTestBase : MiniJobTestBase<MiniJobEntityFrameworkCoreTestModule>
-    {
 
-    }
 }

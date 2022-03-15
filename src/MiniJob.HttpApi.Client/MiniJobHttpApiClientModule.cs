@@ -8,32 +8,31 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.VirtualFileSystem;
 
-namespace MiniJob
+namespace MiniJob;
+
+[DependsOn(
+    typeof(MiniJobApplicationContractsModule),
+    typeof(AbpAccountHttpApiClientModule),
+    typeof(AbpIdentityHttpApiClientModule),
+    typeof(AbpPermissionManagementHttpApiClientModule),
+    typeof(AbpTenantManagementHttpApiClientModule),
+    typeof(AbpFeatureManagementHttpApiClientModule),
+    typeof(AbpSettingManagementHttpApiClientModule)
+)]
+public class MiniJobHttpApiClientModule : AbpModule
 {
-    [DependsOn(
-        typeof(MiniJobApplicationContractsModule),
-        typeof(AbpAccountHttpApiClientModule),
-        typeof(AbpIdentityHttpApiClientModule),
-        typeof(AbpPermissionManagementHttpApiClientModule),
-        typeof(AbpTenantManagementHttpApiClientModule),
-        typeof(AbpFeatureManagementHttpApiClientModule),
-        typeof(AbpSettingManagementHttpApiClientModule)
-    )]
-    public class MiniJobHttpApiClientModule : AbpModule
+    public const string RemoteServiceName = "Default";
+
+    public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        public const string RemoteServiceName = "Default";
+        context.Services.AddHttpClientProxies(
+            typeof(MiniJobApplicationContractsModule).Assembly,
+            RemoteServiceName
+        );
 
-        public override void ConfigureServices(ServiceConfigurationContext context)
+        Configure<AbpVirtualFileSystemOptions>(options =>
         {
-            context.Services.AddHttpClientProxies(
-                typeof(MiniJobApplicationContractsModule).Assembly,
-                RemoteServiceName
-            );
-
-            Configure<AbpVirtualFileSystemOptions>(options =>
-            {
-                options.FileSets.AddEmbedded<MiniJobHttpApiClientModule>();
-            });
-        }
+            options.FileSets.AddEmbedded<MiniJobHttpApiClientModule>();
+        });
     }
 }

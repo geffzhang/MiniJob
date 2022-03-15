@@ -13,47 +13,46 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
 
-namespace MiniJob
+namespace MiniJob;
+
+[DependsOn(
+    typeof(AbpAuditLoggingDomainSharedModule),
+    typeof(AbpBackgroundJobsDomainSharedModule),
+    typeof(AbpFeatureManagementDomainSharedModule),
+    typeof(AbpIdentityDomainSharedModule),
+    typeof(AbpIdentityServerDomainSharedModule),
+    typeof(AbpPermissionManagementDomainSharedModule),
+    typeof(AbpSettingManagementDomainSharedModule),
+    typeof(AbpTenantManagementDomainSharedModule)
+    )]
+public class MiniJobDomainSharedModule : AbpModule
 {
-    [DependsOn(
-        typeof(AbpAuditLoggingDomainSharedModule),
-        typeof(AbpBackgroundJobsDomainSharedModule),
-        typeof(AbpFeatureManagementDomainSharedModule),
-        typeof(AbpIdentityDomainSharedModule),
-        typeof(AbpIdentityServerDomainSharedModule),
-        typeof(AbpPermissionManagementDomainSharedModule),
-        typeof(AbpSettingManagementDomainSharedModule),
-        typeof(AbpTenantManagementDomainSharedModule)
-        )]
-    public class MiniJobDomainSharedModule : AbpModule
+    public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        public override void PreConfigureServices(ServiceConfigurationContext context)
+        MiniJobGlobalFeatureConfigurator.Configure();
+        MiniJobModuleExtensionConfigurator.Configure();
+    }
+
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        Configure<AbpVirtualFileSystemOptions>(options =>
         {
-            MiniJobGlobalFeatureConfigurator.Configure();
-            MiniJobModuleExtensionConfigurator.Configure();
-        }
+            options.FileSets.AddEmbedded<MiniJobDomainSharedModule>();
+        });
 
-        public override void ConfigureServices(ServiceConfigurationContext context)
+        Configure<AbpLocalizationOptions>(options =>
         {
-            Configure<AbpVirtualFileSystemOptions>(options =>
-            {
-                options.FileSets.AddEmbedded<MiniJobDomainSharedModule>();
-            });
+            options.Resources
+                .Add<MiniJobResource>("en")
+                .AddBaseTypes(typeof(AbpValidationResource))
+                .AddVirtualJson("/Localization/MiniJob");
 
-            Configure<AbpLocalizationOptions>(options =>
-            {
-                options.Resources
-                    .Add<MiniJobResource>("en")
-                    .AddBaseTypes(typeof(AbpValidationResource))
-                    .AddVirtualJson("/Localization/MiniJob");
+            options.DefaultResourceType = typeof(MiniJobResource);
+        });
 
-                options.DefaultResourceType = typeof(MiniJobResource);
-            });
-
-            Configure<AbpExceptionLocalizationOptions>(options =>
-            {
-                options.MapCodeNamespace("MiniJob", typeof(MiniJobResource));
-            });
-        }
+        Configure<AbpExceptionLocalizationOptions>(options =>
+        {
+            options.MapCodeNamespace("MiniJob", typeof(MiniJobResource));
+        });
     }
 }

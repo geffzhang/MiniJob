@@ -7,26 +7,25 @@ using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 
-namespace MiniJob
+namespace MiniJob;
+
+[DependsOn(
+    typeof(MiniJobDomainModule),
+    typeof(AbpAccountApplicationModule),
+    typeof(MiniJobApplicationContractsModule),
+    typeof(AbpIdentityApplicationModule),
+    typeof(AbpPermissionManagementApplicationModule),
+    typeof(AbpTenantManagementApplicationModule),
+    typeof(AbpFeatureManagementApplicationModule),
+    typeof(AbpSettingManagementApplicationModule)
+    )]
+public class MiniJobApplicationModule : AbpModule
 {
-    [DependsOn(
-        typeof(MiniJobDomainModule),
-        typeof(AbpAccountApplicationModule),
-        typeof(MiniJobApplicationContractsModule),
-        typeof(AbpIdentityApplicationModule),
-        typeof(AbpPermissionManagementApplicationModule),
-        typeof(AbpTenantManagementApplicationModule),
-        typeof(AbpFeatureManagementApplicationModule),
-        typeof(AbpSettingManagementApplicationModule)
-        )]
-    public class MiniJobApplicationModule : AbpModule
+    public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        public override void ConfigureServices(ServiceConfigurationContext context)
+        Configure<AbpAutoMapperOptions>(options =>
         {
-            Configure<AbpAutoMapperOptions>(options =>
-            {
-                options.AddMaps<MiniJobApplicationModule>();
-            });
-        }
+            options.AddMaps<MiniJobApplicationModule>();
+        });
     }
 }

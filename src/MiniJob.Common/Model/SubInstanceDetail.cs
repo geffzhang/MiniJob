@@ -1,19 +1,17 @@
 ﻿using MiniJob.Enums;
-using System;
 
-namespace MiniJob.Model
+namespace MiniJob.Model;
+
+[Serializable]
+public class SubInstanceDetail
 {
-    [Serializable]
-    public class SubInstanceDetail
-    {
-        public virtual Guid SubInstanceId { get; set; }
+    public virtual Guid SubInstanceId { get; set; }
 
-        public virtual DateTime StartTime { get; set; }
+    public virtual DateTime StartTime { get; set; }
 
-        public virtual DateTime FinishedTime { get; set; }
+    public virtual DateTime FinishedTime { get; set; }
 
-        public virtual string Result { get; set; }
+    public virtual string Result { get; set; }
 
-        public virtual InstanceStatus Status { get; set; }
-    }
+    public virtual InstanceStatus Status { get; set; }
 }

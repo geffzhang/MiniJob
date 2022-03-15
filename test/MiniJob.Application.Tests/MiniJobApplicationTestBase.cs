@@ -1,7 +1,6 @@
-﻿namespace MiniJob
-{
-    public abstract class MiniJobApplicationTestBase : MiniJobTestBase<MiniJobApplicationTestModule>
-    {
+﻿namespace MiniJob;
 
-    }
+public abstract class MiniJobApplicationTestBase : MiniJobTestBase<MiniJobApplicationTestModule>
+{
+
 }

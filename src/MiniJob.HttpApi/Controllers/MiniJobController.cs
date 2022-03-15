@@ -1,15 +1,14 @@
 ﻿using MiniJob.Localization;
 using Volo.Abp.AspNetCore.Mvc;
 
-namespace MiniJob.Controllers
+namespace MiniJob.Controllers;
+
+/* Inherit your controllers from this class.
+ */
+public abstract class MiniJobController : AbpControllerBase
 {
-    /* Inherit your controllers from this class.
-     */
-    public abstract class MiniJobController : AbpControllerBase
+    protected MiniJobController()
     {
-        protected MiniJobController()
-        {
-            LocalizationResource = typeof(MiniJobResource);
-        }
+        LocalizationResource = typeof(MiniJobResource);
     }
 }

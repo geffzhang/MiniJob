@@ -1,6 +1,5 @@
-﻿namespace MiniJob.Scheduler
+﻿namespace MiniJob.Scheduler;
+
+public interface ICleanDataActor : IScheduler
 {
-    public interface ICleanDataActor : IScheduler
-    {
-    }
 }

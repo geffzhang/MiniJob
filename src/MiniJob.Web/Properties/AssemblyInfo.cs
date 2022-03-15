@@ -1,2 +1,2 @@
 ﻿using System.Runtime.CompilerServices;
-[assembly:InternalsVisibleToAttribute("MiniJob.Web.Tests")]
+[assembly: InternalsVisibleToAttribute("MiniJob.Web.Tests")]

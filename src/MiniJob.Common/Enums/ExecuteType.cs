@@ -1,23 +1,22 @@
-﻿namespace MiniJob.Enums
+﻿namespace MiniJob.Enums;
+
+/// <summary>
+/// 执行方式
+/// </summary>
+public enum ExecuteType
 {
     /// <summary>
-    /// 执行方式
+    /// 单机执行
     /// </summary>
-    public enum ExecuteType
-    {
-        /// <summary>
-        /// 单机执行
-        /// </summary>
-        Standalone,
+    Standalone,
 
-        /// <summary>
-        /// 广播执行
-        /// </summary>
-        Broadcast,
+    /// <summary>
+    /// 广播执行
+    /// </summary>
+    Broadcast,
 
-        /// <summary>
-        /// MapReduce
-        /// </summary>
-        MapReduce
-    }
+    /// <summary>
+    /// MapReduce
+    /// </summary>
+    MapReduce
 }

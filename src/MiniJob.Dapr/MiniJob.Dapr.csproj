@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\common.props" />
+
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-		<RootNamespace>MiniJob</RootNamespace>
+	<RootNamespace>MiniJob</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

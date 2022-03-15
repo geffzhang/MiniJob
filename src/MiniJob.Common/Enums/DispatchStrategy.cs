@@ -1,9 +1,8 @@
-﻿namespace MiniJob.Enums
-{
-    public enum DispatchStrategy
-    {
-        HealthFirst,
+﻿namespace MiniJob.Enums;
 
-        Random
-    }
+public enum DispatchStrategy
+{
+    HealthFirst,
+
+    Random
 }

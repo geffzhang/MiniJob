@@ -6,26 +6,25 @@ using Volo.Abp.Http.Client;
 using Volo.Abp.Http.Client.IdentityModel;
 using Volo.Abp.Modularity;
 
-namespace MiniJob.HttpApi.Client.ConsoleTestApp
+namespace MiniJob.HttpApi.Client.ConsoleTestApp;
+
+[DependsOn(
+    typeof(AbpAutofacModule),
+    typeof(MiniJobHttpApiClientModule),
+    typeof(AbpHttpClientIdentityModelModule)
+    )]
+public class MiniJobConsoleApiClientModule : AbpModule
 {
-    [DependsOn(
-        typeof(AbpAutofacModule),
-        typeof(MiniJobHttpApiClientModule),
-        typeof(AbpHttpClientIdentityModelModule)
-        )]
-    public class MiniJobConsoleApiClientModule : AbpModule
+    public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        public override void PreConfigureServices(ServiceConfigurationContext context)
+        PreConfigure<AbpHttpClientBuilderOptions>(options =>
         {
-            PreConfigure<AbpHttpClientBuilderOptions>(options =>
+            options.ProxyClientBuildActions.Add((remoteServiceName, clientBuilder) =>
             {
-                options.ProxyClientBuildActions.Add((remoteServiceName, clientBuilder) =>
-                {
-                    clientBuilder.AddTransientHttpErrorPolicy(
-                        policyBuilder => policyBuilder.WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(Math.Pow(2, i)))
-                    );
-                });
+                clientBuilder.AddTransientHttpErrorPolicy(
+                    policyBuilder => policyBuilder.WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(Math.Pow(2, i)))
+                );
             });
-        }
+        });
     }
 }

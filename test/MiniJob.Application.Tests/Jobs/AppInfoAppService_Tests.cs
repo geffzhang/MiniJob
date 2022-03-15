@@ -1,68 +1,64 @@
 ﻿using Shouldly;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Validation;
 using Xunit;
 
-namespace MiniJob.Jobs
+namespace MiniJob.Jobs;
+
+public class AppInfoAppService_Tests : MiniJobApplicationTestBase
 {
-    public class AppInfoAppService_Tests : MiniJobApplicationTestBase
+    private readonly IAppInfoAppService _appInfoAppService;
+
+    public AppInfoAppService_Tests()
     {
-        private readonly IAppInfoAppService _appInfoAppService;
+        _appInfoAppService = GetRequiredService<IAppInfoAppService>();
+    }
 
-        public AppInfoAppService_Tests()
+    [Fact]
+    public async Task Should_Get_List_Of_AppInfos()
+    {
+        //Act
+        var result = await _appInfoAppService.GetListAsync(
+            new PagedAndSortedResultRequestDto()
+        );
+
+        //Assert
+        result.TotalCount.ShouldBeGreaterThan(0);
+        result.Items.ShouldContain(b => b.AppName == "TestApp");
+    }
+
+    [Fact]
+    public async Task Should_Create_A_Valid_AppInfo()
+    {
+        //Act
+        var result = await _appInfoAppService.CreateAsync(
+            new CreateUpdateAppInfoDto
+            {
+                AppName = "New test appInfo 42",
+                IsEnabled = true
+            }
+        );
+
+        //Assert
+        result.Id.ShouldNotBe(Guid.Empty);
+        result.AppName.ShouldBe("New test appInfo 42");
+    }
+
+    [Fact]
+    public async Task Should_Not_Create_A_Book_Without_AppName()
+    {
+        var exception = await Assert.ThrowsAsync<AbpValidationException>(async () =>
         {
-            _appInfoAppService = GetRequiredService<IAppInfoAppService>();
-        }
-
-        [Fact]
-        public async Task Should_Get_List_Of_AppInfos()
-        {
-            //Act
-            var result = await _appInfoAppService.GetListAsync(
-                new PagedAndSortedResultRequestDto()
-            );
-
-            //Assert
-            result.TotalCount.ShouldBeGreaterThan(0);
-            result.Items.ShouldContain(b => b.AppName == "TestApp");
-        }
-
-        [Fact]
-        public async Task Should_Create_A_Valid_AppInfo()
-        {
-            //Act
-            var result = await _appInfoAppService.CreateAsync(
+            await _appInfoAppService.CreateAsync(
                 new CreateUpdateAppInfoDto
                 {
-                    AppName = "New test appInfo 42",
+                    AppName = "",
                     IsEnabled = true
                 }
             );
+        });
 
-            //Assert
-            result.Id.ShouldNotBe(Guid.Empty);
-            result.AppName.ShouldBe("New test appInfo 42");
-        }
-
-        [Fact]
-        public async Task Should_Not_Create_A_Book_Without_AppName()
-        {
-            var exception = await Assert.ThrowsAsync<AbpValidationException>(async () =>
-            {
-                await _appInfoAppService.CreateAsync(
-                    new CreateUpdateAppInfoDto
-                    {
-                        AppName = "",
-                        IsEnabled = true
-                    }
-                );
-            });
-
-            exception.ValidationErrors
-                .ShouldContain(err => err.MemberNames.Any(mem => mem == "AppName"));
-        }
+        exception.ValidationErrors
+            .ShouldContain(err => err.MemberNames.Any(mem => mem == "AppName"));
     }
 }
