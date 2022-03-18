@@ -1,17 +1,35 @@
 ﻿using MiniJob.Enums;
 
-namespace MiniJob.Jobs;
+namespace MiniJob.Processors;
 
-public class JobContext
+/// <summary>
+/// 处理器上下文
+/// </summary>
+public class ProcessorContext
 {
+    /// <summary>
+    /// 任务Id
+    /// </summary>
     public virtual Guid JobId { get; set; }
 
+    /// <summary>
+    /// 任务实例Id
+    /// </summary>
     public virtual Guid JobInstanceId { get; set; }
 
+    /// <summary>
+    /// 子任务实例Id
+    /// </summary>
     public virtual Guid? SubJobInstanceId { get; set; }
 
+    /// <summary>
+    /// Task Id
+    /// </summary>
     public virtual Guid TaskId { get; set; }
 
+    /// <summary>
+    /// 任务名称
+    /// </summary>
     public virtual string TaskName { get; set; }
 
     /// <summary>
@@ -46,10 +64,13 @@ public class JobContext
     /// </summary>
     public virtual string ExecutorInfo { get; set; }
 
+    /// <summary>
+    /// 执行器类型
+    /// </summary>
     public virtual ProcessorType ProcessorType { get; set; }
 
     /// <summary>
-    /// 获取参数
+    /// 获取参数，优先获取实例参数，不存在则获取任务参数
     /// </summary>
     /// <returns></returns>
     public virtual string GetArgs()

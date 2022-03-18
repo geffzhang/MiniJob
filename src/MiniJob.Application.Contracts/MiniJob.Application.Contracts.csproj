@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiniJob.Common\MiniJob.Common.csproj" />
     <ProjectReference Include="..\MiniJob.Domain.Shared\MiniJob.Domain.Shared.csproj" />
   </ItemGroup>
 
