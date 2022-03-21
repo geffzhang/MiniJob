@@ -1,9 +1,11 @@
-﻿namespace MiniJob.Processors;
+﻿using Volo.Abp.DependencyInjection;
+
+namespace MiniJob.Processors;
 
 /// <summary>
 /// 表示一个任务处理器
 /// </summary>
-public interface IProcessor : IAsyncDisposable
+public interface IProcessor : IAsyncDisposable, ITransientDependency
 {
     /// <summary>
     /// 执行任务
