@@ -27,8 +27,11 @@ public class ConsoleTestAppHostedService : IHostedService
         {
             await application.InitializeAsync();
 
-            var demo = application.ServiceProvider.GetRequiredService<ClientDemoService>();
-            await demo.RunAsync();
+            //var demo = application.ServiceProvider.GetRequiredService<ClientDemoService>();
+            //await demo.RunAsync();
+
+            var timer = application.ServiceProvider.GetRequiredService<TimingWheelService>();
+            await timer.RunAsync();
 
             await application.ShutdownAsync();
         }

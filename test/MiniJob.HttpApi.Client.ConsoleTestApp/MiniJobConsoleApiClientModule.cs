@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using MiniJob.TimeWheel;
 using Polly;
 using System;
 using Volo.Abp.Autofac;
@@ -11,7 +12,8 @@ namespace MiniJob.HttpApi.Client.ConsoleTestApp;
 [DependsOn(
     typeof(AbpAutofacModule),
     typeof(MiniJobHttpApiClientModule),
-    typeof(AbpHttpClientIdentityModelModule)
+    typeof(AbpHttpClientIdentityModelModule),
+    typeof(MiniJobDomainModule)
     )]
 public class MiniJobConsoleApiClientModule : AbpModule
 {
@@ -25,6 +27,14 @@ public class MiniJobConsoleApiClientModule : AbpModule
                     policyBuilder => policyBuilder.WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(Math.Pow(2, i)))
                 );
             });
+        });
+    }
+
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        Configure<TimingWheelOptions>(options =>
+        {
+            options.TickSpan = 1000;
         });
     }
 }
