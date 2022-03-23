@@ -17,14 +17,21 @@ internal class ProcessorExecuter : IProcessorExecuter
         ServiceScopeFactory = serviceScopeFactory;
     }
 
-    public Task<ProcessorResult> RunAsync(ProcessorContext context)
+    public async Task<ProcessorResult> RunAsync(ProcessorContext context)
     {
-        throw new NotImplementedException();
+        using (var scope = ServiceScopeFactory.CreateScope())
+        {
+            var processor = GetProcessor(context, scope);
+            if (processor != null)
+                return await processor.ExecuteAsync(context);
+
+            return ProcessorResult.ErrorMessage($"executor type {context.ProcessorInfo} not register, executor must implementation {typeof(IProcessor).AssemblyQualifiedName}");
+        }
     }
 
-    protected virtual IProcessor GetJobExecutor(ProcessorContext context, IServiceScope scope)
+    protected virtual IProcessor GetProcessor(ProcessorContext context, IServiceScope scope)
     {
-        var executorType = Options.GetProcessor(context.ExecutorInfo);
+        var executorType = Options.GetProcessor(context.ProcessorInfo);
         if (executorType != null)
             return (IProcessor)scope.ServiceProvider.GetRequiredService(executorType.ProcessorType);
 

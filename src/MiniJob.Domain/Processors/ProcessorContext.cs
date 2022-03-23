@@ -62,7 +62,7 @@ public class ProcessorContext
     /// <summary>
     /// 处理器信息(类型全称)
     /// </summary>
-    public virtual string ExecutorInfo { get; set; }
+    public virtual string ProcessorInfo { get; set; }
 
     /// <summary>
     /// 执行器类型

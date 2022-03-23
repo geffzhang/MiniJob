@@ -29,7 +29,7 @@ public class CleanDataActor : MiniJobActor, IRemindable, ICleanDataActor, ISched
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("start clean data scheduler.");
-        await RegisterReminderAsync(ReminderName, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        await RegisterReminderAsync(ReminderName, null, TimeSpan.Zero, TimeSpan.FromHours(MiniJobOptions.CleanSchedulePeriod));
     }
 
     public async Task StopAsync(CancellationToken cancellationToken = default)

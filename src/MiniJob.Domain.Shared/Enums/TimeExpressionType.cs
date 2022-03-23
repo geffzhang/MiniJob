@@ -11,11 +11,6 @@ public enum TimeExpressionType
     Cron,
 
     /// <summary>
-    /// 秒级Cron表达式
-    /// </summary>
-    SecondCron,
-
-    /// <summary>
     /// 固定频率(只支持60秒以上)
     /// </summary>
     FixedRate,
@@ -29,11 +24,6 @@ public enum TimeExpressionType
     /// Api
     /// </summary>
     Api,
-
-    /// <summary>
-    /// 工作流
-    /// </summary>
-    Workflow,
 
     /// <summary>
     /// 延迟任务，到达指定延迟时间后执行一次的任务

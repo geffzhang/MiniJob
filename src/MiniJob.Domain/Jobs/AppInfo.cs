@@ -1,4 +1,6 @@
-﻿using Volo.Abp.Domain.Entities.Auditing;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
 namespace MiniJob.Jobs;
@@ -27,4 +29,41 @@ public class AppInfo : AuditedAggregateRoot<Guid>, IMultiTenant
     /// 是否启用
     /// </summary>
     public virtual bool IsEnabled { get; set; }
+
+    /// <summary>
+    /// 应用的任务信息
+    /// </summary>
+    public virtual ICollection<JobInfo> JobInfos { get; set; }
+
+    protected AppInfo() { }
+
+    public AppInfo(
+        [NotNull] Guid id,
+        [NotNull] string appName,
+        [MaybeNull] string description,
+        [MaybeNull] Guid? tenantId = null)
+        : base(id)
+    {
+        TenantId = tenantId;
+        AppName = appName;
+        Description = description;
+        IsEnabled = true;
+
+        JobInfos = new Collection<JobInfo>();
+    }
+
+    public virtual void Disable()
+    {
+        IsEnabled = false;
+    }
+
+    public virtual void Enable()
+    {
+        IsEnabled = true;
+    }
+
+    public override string ToString()
+    {
+        return $"{base.ToString()}, AppName = {AppName}";
+    }
 }

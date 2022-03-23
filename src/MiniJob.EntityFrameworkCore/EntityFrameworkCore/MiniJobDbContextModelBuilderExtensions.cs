@@ -30,6 +30,7 @@ public static class MiniJobDbContextModelBuilderExtensions
 
             b.ConfigureByConvention();
 
+            b.Property(p => p.AppId);
             b.Property(p => p.JobName).HasMaxLength(128).IsRequired();
             b.Property(p => p.Description).HasMaxLength(512);
             b.Property(p => p.JobArgs).HasMaxLength(1024);
@@ -77,11 +78,13 @@ public static class MiniJobDbContextModelBuilderExtensions
 
             b.ConfigureByConvention();
 
+            b.Property(p => p.AppId);
             b.Property(p => p.InstanceArgs).HasMaxLength(1024);
             b.Property(p => p.InstanceStatus);
             b.Property(p => p.Result).HasMaxLength(1024);
             b.Property(p => p.ExpectedTriggerTime);
             b.Property(p => p.ActualTriggerTime);
+            b.Property(p => p.FinishedTime);
             b.Property(p => p.TryCount);
         });
 

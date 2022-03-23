@@ -1,4 +1,5 @@
-﻿using MiniJob.Enums;
+﻿using MiniJob.Cron;
+using MiniJob.Enums;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp;
@@ -17,6 +18,11 @@ public class JobInfo : AuditedAggregateRoot<Guid>, IMultiTenant
     /// 租户ID
     /// </summary>
     public virtual Guid? TenantId { get; protected set; }
+
+    /// <summary>
+    /// 所属应用
+    /// </summary>
+    public virtual Guid AppId { get; protected internal set; }
 
     /// <summary>
     /// 任务名称
@@ -168,12 +174,14 @@ public class JobInfo : AuditedAggregateRoot<Guid>, IMultiTenant
 
     public JobInfo(
         [NotNull] Guid id,
+        [NotNull] Guid appId,
         [NotNull] string jobName,
         [MaybeNull] string jobArgs,
         [MaybeNull] Guid? tenantId = null)
         : base(id)
     {
         TenantId = tenantId;
+        AppId = appId;
         JobName = jobName;
         JobArgs = jobArgs;
         IsEnabled = true;
@@ -184,6 +192,40 @@ public class JobInfo : AuditedAggregateRoot<Guid>, IMultiTenant
         MaxTryCount = 3;
 
         JobInstances = new Collection<JobInstance>();
+    }
+
+    /// <summary>
+    /// 计算任务下次触发时间
+    /// </summary>
+    /// <param name="baseTime"></param>
+    public void CalculateNextTriggerTime(DateTime baseTime)
+    {
+        if (TimeExpression == TimeExpressionType.Cron)
+        {
+            CronExpression cronExpression = CronExpression.Parse(TimeExpressionValue);
+            var nextTime = cronExpression.GetNextOccurrence(baseTime);
+            NextTriggerTime = nextTime;
+        }
+        else if (TimeExpression == TimeExpressionType.FixedRate)
+        {
+            var seconds = int.Parse(TimeExpressionValue);
+            NextTriggerTime = baseTime.AddSeconds(seconds);
+        }
+        else if (TimeExpression == TimeExpressionType.Delayed)
+        {
+            if (int.TryParse(TimeExpressionValue, out var delayedTime))
+            {
+                NextTriggerTime = baseTime.AddSeconds(delayedTime);
+            }
+            else
+            {
+                NextTriggerTime = baseTime;
+            }
+        }
+        else if (TimeExpression == TimeExpressionType.Api)
+        {
+            NextTriggerTime = null;
+        }
     }
 
     public virtual void Disable()
