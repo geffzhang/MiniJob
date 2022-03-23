@@ -99,10 +99,6 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
             if (jobInfo.NextTriggerTime > Clock.Now.AddMilliseconds(MiniJobOptions.AppSchedulePeriod * 1.5))
                 continue;
 
-            // 保存任务实例
-            var jobInstance = new JobInstance(GuidGenerator.Create(), jobInfo.AppId, jobInfo.Id, jobInfo.NextTriggerTime.Value);
-            await JobInstanceRepository.InsertAsync(jobInstance);
-
             // 计算任务实例到期时间
             TimeSpan dueTime = TimeSpan.Zero;
             if (jobInfo.NextTriggerTime < Clock.Now)
@@ -125,6 +121,10 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
             {
                 dueTime = jobInfo.NextTriggerTime.Value - Clock.Now;
             }
+
+            // 保存任务实例
+            var jobInstance = new JobInstance(GuidGenerator.Create(), jobInfo.AppId, jobInfo.Id, jobInfo.NextTriggerTime.Value);
+            await JobInstanceRepository.InsertAsync(jobInstance);
 
             // 激活派发Actor，到期后派送任务实例到Worker
             await ActorHelper.CreateActor<IJobDispatchActor, JobDispatchActor>(jobInstance.Id.ToString())

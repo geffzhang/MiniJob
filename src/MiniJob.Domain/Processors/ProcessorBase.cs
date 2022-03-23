@@ -2,12 +2,15 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Json;
 
 namespace MiniJob.Processors;
 
 public abstract class ProcessorBase : IProcessor
 {
     public IAbpLazyServiceProvider LazyServiceProvider { get; set; }
+
+    protected IJsonSerializer JsonSerializer => LazyServiceProvider.LazyGetRequiredService<IJsonSerializer>();
 
     protected ILoggerFactory LoggerFactory => LazyServiceProvider.LazyGetRequiredService<ILoggerFactory>();
 
@@ -39,12 +42,18 @@ public abstract class ProcessorBase : IProcessor
             stopwatch.Stop();
             Logger.LogInformation("{JobInfoId} JobInstanceId-{JobInstanceId}|{Status}|{Elapsed}", context.JobId, context.JobInstanceId, status, stopwatch.Elapsed);
             await DisposeAsync();
+            Dispose();
         }
     }
 
     public virtual ValueTask DisposeAsync()
     {
         return ValueTask.CompletedTask;
+    }
+
+    public virtual void Dispose()
+    {
+        
     }
 
     /// <summary>

@@ -5,7 +5,7 @@ namespace MiniJob.Processors;
 /// <summary>
 /// 表示一个任务处理器
 /// </summary>
-public interface IProcessor : IAsyncDisposable, ITransientDependency
+public interface IProcessor : IAsyncDisposable, IDisposable, ITransientDependency
 {
     /// <summary>
     /// 执行任务
