@@ -55,6 +55,20 @@ public class MiniJobDataSeederContributor : IDataSeedContributor, ITransientDepe
             httpJobInfo.CalculateNextTriggerTime(Clock.Now);
             appInfo.JobInfos.Add(httpJobInfo);
 
+            // Shell 任务
+            var shellJobInfo = new JobInfo(GuidGenerator.Create(), appInfo.Id, "Shell任务示例", string.Empty, context.TenantId)
+            {
+                ProcessorType = ProcessorType.Shell,
+                JobArgs = "@echo off & echo Hello Minijob",
+                TimeExpression = TimeExpressionType.FixedRate,
+                TimeExpressionValue = "120",
+                Timeout = TimeSpan.FromSeconds(30),
+                Description = "每两分钟打印Hello MiniJob",
+                ExecutorInfo = typeof(ShellProcessor).FullName,
+            };
+            shellJobInfo.CalculateNextTriggerTime(Clock.Now);
+            appInfo.JobInfos.Add(shellJobInfo);
+
             await _appRepository.InsertAsync(appInfo, true);
         }
     }
