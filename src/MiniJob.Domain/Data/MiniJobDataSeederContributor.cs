@@ -50,7 +50,8 @@ public class MiniJobDataSeederContributor : IDataSeedContributor, ITransientDepe
                 TimeExpressionValue = "120",
                 Timeout = TimeSpan.FromSeconds(30),
                 Description = "每两分钟获取一次一言接口数据",
-                ExecutorInfo = typeof(HttpProcessor).FullName
+                ProcessorInfo = typeof(HttpProcessor).FullName,
+                MisfireStrategy = MisfireStrategy.FireOnceNow
             };
             httpJobInfo.CalculateNextTriggerTime(Clock.Now);
             appInfo.JobInfos.Add(httpJobInfo);
@@ -64,7 +65,8 @@ public class MiniJobDataSeederContributor : IDataSeedContributor, ITransientDepe
                 TimeExpressionValue = "120",
                 Timeout = TimeSpan.FromSeconds(30),
                 Description = "每两分钟打印Hello MiniJob",
-                ExecutorInfo = typeof(ShellProcessor).FullName,
+                ProcessorInfo = typeof(ShellProcessor).FullName,
+                MisfireStrategy = MisfireStrategy.FireOnceNow
             };
             shellJobInfo.CalculateNextTriggerTime(Clock.Now);
             appInfo.JobInfos.Add(shellJobInfo);

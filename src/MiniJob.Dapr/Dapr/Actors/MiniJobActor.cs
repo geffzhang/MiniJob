@@ -2,6 +2,7 @@
 using Volo.Abp.Auditing;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
+using Volo.Abp.Json;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Timing;
 using Volo.Abp.Uow;
@@ -30,6 +31,8 @@ public abstract class MiniJobActor :
     protected ICurrentUser CurrentUser => LazyServiceProvider.LazyGetRequiredService<ICurrentUser>();
 
     protected IClock Clock => LazyServiceProvider.LazyGetRequiredService<IClock>();
+
+    protected IJsonSerializer JsonSerializer => LazyServiceProvider.LazyGetRequiredService<IJsonSerializer>();
 
     protected IUnitOfWork CurrentUnitOfWork => UnitOfWorkManager?.Current;
 

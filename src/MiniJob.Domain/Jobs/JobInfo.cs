@@ -86,7 +86,7 @@ public class JobInfo : AuditedAggregateRoot<Guid>, IMultiTenant
     /// <summary>
     /// 执行器信息（执行器全称FullName）
     /// </summary>
-    public virtual string ExecutorInfo { get; set; }
+    public virtual string ProcessorInfo { get; set; }
     #endregion
 
     #region 运行时配置

@@ -40,7 +40,7 @@ public static class MiniJobDbContextModelBuilderExtensions
             b.Property(p => p.TimeExpressionValue).HasMaxLength(128);
             b.Property(p => p.ExecuteType);
             b.Property(p => p.ProcessorType);
-            b.Property(p => p.ExecutorInfo).HasMaxLength(256);
+            b.Property(p => p.ProcessorInfo).HasMaxLength(256);
             b.Property(p => p.MaxInstanceCount);
             b.Property(p => p.Concurrency);
             b.Property(p => p.Timeout);

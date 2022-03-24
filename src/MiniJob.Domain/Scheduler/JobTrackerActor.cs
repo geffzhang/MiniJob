@@ -109,9 +109,7 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
                 // 延迟任务过期后立即触发一次
                 if (jobInfo.MisfireStrategy == MisfireStrategy.Ignore && jobInfo.TimeExpression != TimeExpressionType.Delayed)
                 {
-                    CalculateJobInfoNextTriggerTime(jobInfo);
-
-                    await JobInfoRepository.UpdateAsync(jobInfo);
+                    await UpdateJobNextTriggerTime(jobInfo);
 
                     Logger.LogInformation("MisfireStrategy is {MisfireStrategy}, continue this job, next trigger time is {NextTriggerTime}", jobInfo.MisfireStrategy, jobInfo.NextTriggerTime);
                     continue;
@@ -126,14 +124,19 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
             var jobInstance = new JobInstance(GuidGenerator.Create(), jobInfo.AppId, jobInfo.Id, jobInfo.NextTriggerTime.Value);
             await JobInstanceRepository.InsertAsync(jobInstance);
 
+            await UpdateJobNextTriggerTime(jobInfo);
+
             // 激活派发Actor，到期后派送任务实例到Worker
             await ActorHelper.CreateActor<IJobDispatchActor, JobDispatchActor>(jobInstance.Id.ToString())
                 .DispatchAsync(dueTime);
-
-            CalculateJobInfoNextTriggerTime(jobInfo);
-
-            await JobInfoRepository.UpdateAsync(jobInfo);
         }
+    }
+
+    protected virtual async Task UpdateJobNextTriggerTime(JobInfo jobInfo)
+    {
+        CalculateJobInfoNextTriggerTime(jobInfo);
+
+        await JobInfoRepository.UpdateAsync(jobInfo);
     }
 
     /// <summary>

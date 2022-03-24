@@ -136,9 +136,9 @@ public class JobDispatchActor : MiniJobActor, IJobDispatchActor
 
     protected virtual async Task DispatchJobInstanceAsync(JobInstance jobInstance, JobInfo jobInfo)
     {
-        if (jobInfo.ExecutorInfo.IsNullOrEmpty())
+        if (jobInfo.ProcessorInfo.IsNullOrEmpty())
         {
-            Logger.LogWarning("JobInfo-{JobInfo} executorinfo is empty.", jobInfo);
+            Logger.LogWarning("JobInfo-{JobInfo} ProcessorInfo is empty.", jobInfo);
             return;
         }
 
@@ -253,7 +253,7 @@ public class JobDispatchActor : MiniJobActor, IJobDispatchActor
             TryCount = 0,
             TaskId = Guid.NewGuid(),
             ProcessorType = jobInfo.ProcessorType,
-            ProcessorInfo = jobInfo.ExecutorInfo,
+            ProcessorInfo = jobInfo.ProcessorInfo,
         };
     }
 }
