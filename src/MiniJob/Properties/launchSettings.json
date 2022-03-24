@@ -7,6 +7,11 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "https://localhost:44328/"
+    },
+    "Dapr": {
+      "commandName": "Executable",
+      "executablePath": "dapr",
+      "commandLineArgs": "run --app-id minijob --app-port 44328 --app-ssl -- dotnet MiniJob.dll"
     }
   }
 }

@@ -1,8 +1,13 @@
 ﻿using Lsw.Abp.AspNetCore.Mvc.UI.Theme.Stisla;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MiniJob.Dapr;
+using MiniJob.Dapr.Actors;
 using MiniJob.Data;
 using MiniJob.Localization;
 using MiniJob.Menus;
+using MiniJob.Processors;
+using MiniJob.Scheduler;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -39,6 +44,7 @@ using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.Web;
+using Volo.Abp.Threading;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
@@ -94,13 +100,13 @@ namespace MiniJob;
     typeof(AbpSettingManagementApplicationModule),
     typeof(AbpSettingManagementEntityFrameworkCoreModule),
     typeof(AbpSettingManagementHttpApiModule),
-    typeof(AbpSettingManagementWebModule)
+    typeof(AbpSettingManagementWebModule),
+
+    typeof(MiniJobDaprModule),
+    typeof(MiniJobCommonModule)
 )]
 public class MiniJobModule : AbpModule
 {
-    /* Single point to enable/disable multi-tenancy */
-    public const bool IsMultiTenant = true;
-
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
@@ -109,6 +115,9 @@ public class MiniJobModule : AbpModule
                 typeof(MiniJobResource)
             );
         });
+
+        AutoAddSchedulers(context.Services);
+        RegisterJobs(context.Services);
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -133,7 +142,7 @@ public class MiniJobModule : AbpModule
     {
         Configure<AbpMultiTenancyOptions>(options =>
         {
-            options.IsEnabled = IsMultiTenant;
+            options.IsEnabled = MiniJobConsts.IsMultiTenant;
         });
     }
 
@@ -266,6 +275,66 @@ public class MiniJobModule : AbpModule
         });
     }
 
+    private static void AutoAddSchedulers(IServiceCollection services)
+    {
+        var schedulerTypes = new List<Type>();
+
+        services.OnRegistred(context =>
+        {
+            if (typeof(IScheduler).IsAssignableFrom(context.ImplementationType))
+            {
+                schedulerTypes.AddIfNotContains(context.ImplementationType);
+            }
+        });
+
+        services.Configure<MiniJobOptions>(options =>
+        {
+            options.Schedulers.AddIfNotContains(schedulerTypes);
+        });
+    }
+
+    private static void RegisterJobs(IServiceCollection services)
+    {
+        var jobTypes = new List<Type>();
+
+        services.OnRegistred(context =>
+        {
+            if (typeof(IProcessor).IsAssignableFrom(context.ImplementationType))
+            {
+                jobTypes.AddIfNotContains(context.ImplementationType);
+            }
+        });
+
+        services.Configure<MiniJobProcessorOptions>(options =>
+        {
+            foreach (var jobType in jobTypes)
+            {
+                options.AddProcessor(jobType);
+            }
+        });
+    }
+
+    public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
+    {
+        var app = context.GetApplicationBuilder();
+
+        // 应用完全启动后启动所有注册的调度器
+        // 要先启动Sidecar才能启动调度器，而ApplicationStarted的注册顺序与执行顺序相反，
+        // 所以启动调度器方法要先注册，故应放在OnPreApplicationInitialization方法中注册
+        var lifeTime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+        lifeTime.ApplicationStarted.Register(() =>
+        {
+            // 等Sidecar启动
+            Thread.Sleep(10000);
+            var options = app.ApplicationServices.GetRequiredService<IOptions<MiniJobOptions>>().Value;
+            foreach (var type in options.Schedulers)
+            {
+                var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
+                AsyncHelper.RunSync(() => scheduler.StartAsync());
+            }
+        });
+    }
+
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var app = context.GetApplicationBuilder();
@@ -289,7 +358,7 @@ public class MiniJobModule : AbpModule
         app.UseAuthentication();
         app.UseJwtTokenMiddleware();
 
-        if (IsMultiTenant)
+        if (MiniJobConsts.IsMultiTenant)
         {
             app.UseMultiTenancy();
         }
@@ -307,5 +376,19 @@ public class MiniJobModule : AbpModule
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
         app.UseConfiguredEndpoints();
+    }
+
+    public override void OnApplicationShutdown(ApplicationShutdownContext context)
+    {
+        var daprOptions = context.ServiceProvider.GetRequiredService<IOptions<MiniJobDaprOptions>>().Value;
+        if (daprOptions.RunSidecar)
+        {
+            var options = context.ServiceProvider.GetRequiredService<IOptions<MiniJobOptions>>().Value;
+            foreach (var type in options.Schedulers)
+            {
+                var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
+                AsyncHelper.RunSync(() => scheduler.StopAsync());
+            }
+        }
     }
 }

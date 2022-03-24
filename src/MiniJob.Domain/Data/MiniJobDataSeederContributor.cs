@@ -1,4 +1,4 @@
-﻿using MiniJob.Enums;
+﻿using MiniJob.Entities;
 using MiniJob.Jobs;
 using MiniJob.Processors;
 using Volo.Abp.Data;

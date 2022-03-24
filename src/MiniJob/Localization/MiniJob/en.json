@@ -1,8 +1,34 @@
 {
   "culture": "en",
   "texts": {
-    "Welcome_Title": "Welcome",
-    "Welcome_Text": "This is a minimalist, single layer application startup template for the ABP Framework.",
-    "Menu:Home": "Home"
+    "Menu:Home": "Home",
+    "Welcome": "Welcome",
+    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io.",
+    "Menu:MiniJob": "MiniJob",
+    "Menu:AppInfos": "AppInfos",
+    "AppInfos": "AppInfos",
+    "Name": "Name",
+    "Description": "Description",
+    "IsEnabled": "IsEnabled",
+    "CreationTime": "CreationTime",
+    "AppInfoDeletionConfirmationMessage": "Are you sure to delete the app '{0}'?",
+    "SuccessfullyDeleted": "Successfully deleted!",
+    "Update": "Update",
+    "NewAppInfo": "New App",
+    "Permission:MiniJob": "MiniJob",
+    "Permission:AppInfos": "App Management",
+    "Permission:AppInfos.Create": "Creating new apps",
+    "Permission:AppInfos.Edit": "Editing the apps",
+    "Permission:AppInfos.Delete": "Deleting the apps",
+    "Enum:ExecuteType:0": "Standalone",
+    "Enum:ExecuteType:1": "Broadcast",
+    "Enum:ExecuteType:2": "MapReduce",
+    "Enum:InstanceStatus:0": "Waiting Dispatch",
+    "Enum:InstanceStatus:1": "Waiting Worker Receive",
+    "Enum:InstanceStatus:2": "Runing",
+    "Enum:InstanceStatus:3": "Failed",
+    "Enum:InstanceStatus:4": "Succeed",
+    "Enum:InstanceStatus:5": "Canceled",
+    "Enum:InstanceStatus:6": "Stoped"
   }
 }

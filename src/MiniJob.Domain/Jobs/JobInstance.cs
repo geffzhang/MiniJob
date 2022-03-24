@@ -1,4 +1,4 @@
-﻿using MiniJob.Enums;
+﻿using MiniJob.Entities;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;

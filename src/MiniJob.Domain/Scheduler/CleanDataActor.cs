@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MiniJob.Dapr.Actors;
-using MiniJob.Enums;
+using MiniJob.Entities;
 using MiniJob.Jobs;
 using Volo.Abp.Domain.Repositories;
 

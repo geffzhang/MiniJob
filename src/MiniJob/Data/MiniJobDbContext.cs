@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MiniJob.Entities.Jobs;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
@@ -12,6 +13,12 @@ namespace MiniJob.Data;
 
 public class MiniJobDbContext : AbpDbContext<MiniJobDbContext>
 {
+    public DbSet<AppInfo> AppInfos { get; set; }
+    public DbSet<JobInfo> JobInfos { get; set; }
+    public DbSet<JobInstance> JobInstances { get; set; }
+    public DbSet<ProcessorInfo> ProcessorInfos { get; set; }
+    public DbSet<WorkerInfo> WorkerInfos { get; set; }
+
     public MiniJobDbContext(DbContextOptions<MiniJobDbContext> options)
         : base(options)
     {
@@ -32,5 +39,7 @@ public class MiniJobDbContext : AbpDbContext<MiniJobDbContext>
         builder.ConfigureTenantManagement();
 
         /* Configure your own entities here */
+
+        builder.ConfigureMiniJob();
     }
 }

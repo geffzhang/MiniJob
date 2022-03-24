@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MiniJob.Dapr.Actors;
-using MiniJob.Enums;
+using MiniJob.Entities;
 using MiniJob.Jobs;
 using MiniJob.Processors;
 using Polly;

@@ -1,4 +1,5 @@
 ﻿using MiniJob.Localization;
+using MiniJob.Permissions;
 using Volo.Abp.Identity.Web.Navigation;
 using Volo.Abp.SettingManagement.Web.Navigation;
 using Volo.Abp.TenantManagement.Web.Navigation;
@@ -16,7 +17,7 @@ public class MiniJobMenuContributor : IMenuContributor
         }
     }
 
-    private Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+    private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var administration = context.Menu.GetAdministration();
         var l = context.GetLocalizer<MiniJobResource>();
@@ -32,7 +33,7 @@ public class MiniJobMenuContributor : IMenuContributor
             )
         );
 
-        if (MiniJobModule.IsMultiTenant)
+        if (MiniJobConsts.IsMultiTenant)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
         }
@@ -41,6 +42,33 @@ public class MiniJobMenuContributor : IMenuContributor
             administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
         }
 
-        return Task.CompletedTask;
+        administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
+        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 3);
+
+        var miniJobMenu = new ApplicationMenuItem(
+            "MiniJob",
+            l["Menu:MiniJob"],
+            icon: "fa fa-clock"
+        );
+
+        context.Menu.AddItem(miniJobMenu);
+
+        if (await context.IsGrantedAsync(MiniJobPermissions.AppInfos.Default))
+        {
+            miniJobMenu.AddItem(new ApplicationMenuItem(
+                "MiniJob.AppInfos",
+                l["Menu:AppInfos"],
+                url: "/Jobs/AppInfos"
+            ));
+        }
+
+        if (await context.IsGrantedAsync(MiniJobPermissions.JobInfos.Default))
+        {
+            miniJobMenu.AddItem(new ApplicationMenuItem(
+                "MiniJob.JobInfos",
+                l["Menu:JobInfos"],
+                url: "/Jobs/JobInfos"
+            ));
+        }
     }
 }

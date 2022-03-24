@@ -1,5 +1,5 @@
 ﻿using MiniJob.Cron;
-using MiniJob.Enums;
+using MiniJob.Entities;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp;

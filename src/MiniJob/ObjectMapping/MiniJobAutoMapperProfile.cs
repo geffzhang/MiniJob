@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MiniJob.Entities.Jobs;
+using MiniJob.Jobs;
 
 namespace MiniJob.ObjectMapping;
 
@@ -6,6 +8,10 @@ public class MiniJobAutoMapperProfile : Profile
 {
     public MiniJobAutoMapperProfile()
     {
-        /* Create your AutoMapper object mappings here */
+        CreateMap<AppInfo, AppInfoDto>();
+        CreateMap<CreateUpdateAppInfoDto, AppInfo>();
+
+        CreateMap<JobInfo, JobInfoDto>();
+        CreateMap<CreateUpdateJobInfoDto, JobInfo>();
     }
 }

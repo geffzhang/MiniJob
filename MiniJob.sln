@@ -55,6 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniJob", "src\MiniJob\MiniJob.csproj", "{8574891B-8019-48C1-A853-8E0BDA025B5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniJob.Common", "src\MiniJob.Common\MiniJob.Common.csproj", "{4F28C74A-BA2E-4BD3-9B7A-DECF62F4AF5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,10 @@ Global
 		{8574891B-8019-48C1-A853-8E0BDA025B5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8574891B-8019-48C1-A853-8E0BDA025B5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8574891B-8019-48C1-A853-8E0BDA025B5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F28C74A-BA2E-4BD3-9B7A-DECF62F4AF5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F28C74A-BA2E-4BD3-9B7A-DECF62F4AF5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F28C74A-BA2E-4BD3-9B7A-DECF62F4AF5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F28C74A-BA2E-4BD3-9B7A-DECF62F4AF5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,6 +163,7 @@ Global
 		{ED76B9EE-5694-46E7-B665-1CD58EAAFB77} = {0400A1FA-BA58-4432-9824-E9CD4645B5B4}
 		{5386112E-F636-4CC9-8DC0-35724E9691FA} = {EBF79182-B0B1-4856-8A06-C7B76E2839BC}
 		{8574891B-8019-48C1-A853-8E0BDA025B5F} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
+		{4F28C74A-BA2E-4BD3-9B7A-DECF62F4AF5A} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28315BFD-90E7-4E14-A2EA-F3D23AF4126F}

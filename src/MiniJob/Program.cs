@@ -1,4 +1,3 @@
-using System;
 using MiniJob.Data;
 using Serilog;
 using Serilog.Events;
@@ -51,7 +50,7 @@ public class Program
             }
 
             Log.Information("Starting MiniJob.");
-            await app.RunAsync();
+            await app.RunAsync("https://localhost:44328");
             return 0;
         }
         catch (Exception ex)
