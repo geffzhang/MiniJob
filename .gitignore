@@ -261,3 +261,8 @@ src/MiniJob.HttpApi.HostWithIds/Logs/*
 src/MiniJob.DbMigrator/Logs/*
 src/MiniJob.Blazor.Server/Logs/*
 src/MiniJob.Blazor.Server.Tiered/Logs/*
+
+# Use abp install-libs to restore.
+**/wwwroot/libs/*
+package-lock.json
+tempkey.jwk
