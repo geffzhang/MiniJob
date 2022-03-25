@@ -51,4 +51,9 @@ public class HttpArgs
         MediaType = "application/json";
         Timeout = 60;
     }
+
+    public override string ToString()
+    {
+        return $"{Method} {Url}";
+    }
 }

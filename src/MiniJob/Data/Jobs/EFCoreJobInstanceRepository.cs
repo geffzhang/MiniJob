@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MiniJob.Data;
 using MiniJob.Entities;
 using MiniJob.Entities.Jobs;
+using MiniJob.Scheduler;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Timing;
@@ -12,12 +13,12 @@ namespace MiniJob.EntityFrameworkCore.Jobs;
 public class EFCoreJobInstanceRepository : EfCoreRepository<MiniJobDbContext, JobInstance, Guid>, IJobInstanceRepository
 {
     protected IClock Clock { get; }
-    protected MiniJobOptions MiniJobOptions { get; }
+    protected MiniJobSchedulerOptions MiniJobOptions { get; }
 
     public EFCoreJobInstanceRepository(
         IDbContextProvider<MiniJobDbContext> dbContextProvider,
         IClock clock,
-        IOptions<MiniJobOptions> options)
+        IOptions<MiniJobSchedulerOptions> options)
         : base(dbContextProvider)
     {
         Clock = clock;

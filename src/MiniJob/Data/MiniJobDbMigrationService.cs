@@ -181,7 +181,7 @@ public class MiniJobDbMigrationService : ITransientDependency
             throw new Exception("Solution folder not found!");
         }
 
-        return Path.Combine(slnDirectoryPath, "MiniJob");
+        return Path.Combine(slnDirectoryPath, "src", "MiniJob");
     }
 
     private string GetSolutionDirectoryPath()

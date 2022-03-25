@@ -287,7 +287,7 @@ public class MiniJobModule : AbpModule
             }
         });
 
-        services.Configure<MiniJobOptions>(options =>
+        services.Configure<MiniJobSchedulerOptions>(options =>
         {
             options.Schedulers.AddIfNotContains(schedulerTypes);
         });
@@ -326,7 +326,7 @@ public class MiniJobModule : AbpModule
         {
             // 等Sidecar启动
             Thread.Sleep(10000);
-            var options = app.ApplicationServices.GetRequiredService<IOptions<MiniJobOptions>>().Value;
+            var options = app.ApplicationServices.GetRequiredService<IOptions<MiniJobSchedulerOptions>>().Value;
             foreach (var type in options.Schedulers)
             {
                 var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
@@ -383,7 +383,7 @@ public class MiniJobModule : AbpModule
         var daprOptions = context.ServiceProvider.GetRequiredService<IOptions<MiniJobDaprOptions>>().Value;
         if (daprOptions.RunSidecar)
         {
-            var options = context.ServiceProvider.GetRequiredService<IOptions<MiniJobOptions>>().Value;
+            var options = context.ServiceProvider.GetRequiredService<IOptions<MiniJobSchedulerOptions>>().Value;
             foreach (var type in options.Schedulers)
             {
                 var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);

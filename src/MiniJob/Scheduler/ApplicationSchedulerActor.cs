@@ -8,14 +8,14 @@ namespace MiniJob.Scheduler;
 
 public class ApplicationSchedulerActor : MiniJobActor, IApplicationSchedulerActor, IRemindable
 {
-    private const string SchedulerReminderName = "GlobalAppJobSchedulerReminder";
+    private const string SchedulerReminderName = "AppJobSchedulerReminder";
 
-    protected MiniJobOptions MiniJobOptions { get; }
+    protected MiniJobSchedulerOptions MiniJobOptions { get; }
     protected IRepository<AppInfo, Guid> AppInfoRepository { get; }
 
     public ApplicationSchedulerActor(
         ActorHost host,
-        IOptions<MiniJobOptions> options,
+        IOptions<MiniJobSchedulerOptions> options,
         IRepository<AppInfo, Guid> appInfoRepository)
         : base(host)
     {

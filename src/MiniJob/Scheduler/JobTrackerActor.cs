@@ -15,14 +15,14 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
     protected IAbpDistributedLock DistributedLock { get; }
     protected IJobInfoRepository JobInfoRepository { get; }
     protected IRepository<JobInstance, Guid> JobInstanceRepository { get; }
-    protected MiniJobOptions MiniJobOptions { get; }
+    protected MiniJobSchedulerOptions MiniJobOptions { get; }
 
     public JobTrackerActor(
         ActorHost host,
         IAbpDistributedLock distributedLock,
         IJobInfoRepository jobInfoRepository,
         IRepository<JobInstance, Guid> jobInstanceRepository,
-        IOptions<MiniJobOptions> options)
+        IOptions<MiniJobSchedulerOptions> options)
         : base(host)
     {
         DistributedLock = distributedLock;
@@ -76,7 +76,7 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
     /// 分钟级别任务调度
     /// </summary>
     /// <remarks>
-    /// <para>1、获取应用所有等待执行的分钟级任务(2 * <see cref="MiniJobOptions.AppSchedulePeriod"/>内需要调度执行的任务)</para>
+    /// <para>1、获取应用所有等待执行的分钟级任务(2 * <see cref="MiniJobSchedulerOptions.AppSchedulePeriod"/>内需要调度执行的任务)</para>
     /// <para>2、创建任务实例，并激活派送Actor<see cref="IJobDispatchActor"/>，到执行时间后派送到Worker执行</para>
     /// <para>3、计算任务下次调度时间</para>
     /// </remarks>

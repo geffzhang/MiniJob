@@ -11,13 +11,13 @@ public class CleanDataActor : MiniJobActor, IRemindable, ICleanDataActor, ISched
 {
     private const string ReminderName = "CleanDataReminder";
 
-    protected MiniJobOptions MiniJobOptions { get; }
+    protected MiniJobSchedulerOptions MiniJobOptions { get; }
 
     protected IRepository<JobInstance, Guid> JobInstanceRepository { get; }
 
     public CleanDataActor(
         ActorHost host,
-        IOptions<MiniJobOptions> options,
+        IOptions<MiniJobSchedulerOptions> options,
         IRepository<JobInstance, Guid> jobInstanceRepository)
         : base(host)
     {

@@ -73,10 +73,12 @@ public class HttpProcessor : ProcessorBase
 
         if (!response.IsSuccessStatusCode)
         {
-            var message = $"{httpArgs.Method} url: {httpArgs.Url} failed, response code is {response.StatusCode}, response body is {responseMsg}";
+            var message = $"{httpArgs} failed, response code is {response.StatusCode}, response body is {responseMsg}";
             Logger.LogWarning(message);
             return ProcessorResult.ErrorMessage(message);
         }
+
+        Logger.LogInformation("{HttpArgs} Response {StatusCode}, response body: {Response}", httpArgs, response.StatusCode, responseMsg);
 
         // 自定义结果校验
         if (!httpArgs.CheckKey.IsNullOrWhiteSpace() && !httpArgs.CheckValue.IsNullOrWhiteSpace())
@@ -87,26 +89,26 @@ public class HttpProcessor : ProcessorBase
                 var checkValue = jsonElement.GetString();
                 if (httpArgs.CheckValue != checkValue)
                 {
-                    var message = $"check {httpArgs.CheckKey}={httpArgs.CheckValue} failed, response code is {response.StatusCode}, response body is {responseMsg}";
+                    var message = $"check {httpArgs.CheckKey}={httpArgs.CheckValue} failed, response code is {response.StatusCode}";
                     Logger.LogWarning(message);
                     return ProcessorResult.ErrorMessage(message);
                 }
                 else
                 {
-                    var message = $"check {httpArgs.CheckKey}={httpArgs.CheckValue} success, response code is {response.StatusCode}, response body is {responseMsg}";
+                    var message = $"check {httpArgs.CheckKey}={httpArgs.CheckValue} success, response code is {response.StatusCode}";
                     Logger.LogInformation(message);
                     return ProcessorResult.OkMessage(message);
                 }
             }
             else
             {
-                var message = $"check {httpArgs.CheckKey}={httpArgs.CheckValue} failed, response not exists checkkey, please check jobargs configuration, response code is {response.StatusCode}, response body is {responseMsg}";
+                var message = $"check {httpArgs.CheckKey}={httpArgs.CheckValue} failed, response not exists checkkey, please check jobargs configuration, response code is {response.StatusCode}";
                 Logger.LogWarning(message);
                 return ProcessorResult.OkMessage(message);
             }
         }
 
-        var okMessage = $"response statuscode: {response.StatusCode}, body: {responseMsg}";
+        var okMessage = $"response statuscode: {response.StatusCode}";
         Logger.LogInformation(okMessage);
         return ProcessorResult.OkMessage(okMessage);
     }

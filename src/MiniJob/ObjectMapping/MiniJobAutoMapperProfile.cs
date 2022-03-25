@@ -10,6 +10,7 @@ public class MiniJobAutoMapperProfile : Profile
     {
         CreateMap<AppInfo, AppInfoDto>();
         CreateMap<CreateUpdateAppInfoDto, AppInfo>();
+        CreateMap<AppInfoDto, CreateUpdateAppInfoDto>();
 
         CreateMap<JobInfo, JobInfoDto>();
         CreateMap<CreateUpdateJobInfoDto, JobInfo>();

@@ -1,12 +1,11 @@
-﻿using MiniJob.Scheduler;
-using Volo.Abp.Collections;
+﻿using Volo.Abp.Collections;
 
-namespace MiniJob;
+namespace MiniJob.Scheduler;
 
 /// <summary>
 /// MiniJob配置选项
 /// </summary>
-public class MiniJobOptions
+public class MiniJobSchedulerOptions
 {
     /// <summary>
     /// 任务调度调度周期，单位毫秒，默认为 15000
@@ -28,20 +27,14 @@ public class MiniJobOptions
     /// </summary>
     public int JobInstanceRetention { get; set; }
 
-    /// <summary>
-    /// 状态存储组件名称,默认为 statestore
-    /// </summary>
-    public string StateName { get; set; }
-
     public ITypeList<IScheduler> Schedulers { get; set; }
 
-    public MiniJobOptions()
+    public MiniJobSchedulerOptions()
     {
         AppSchedulePeriod = 15000;
         JobInstanceSchedulePeriod = 10000;
         CleanSchedulePeriod = 12;
         JobInstanceRetention = 3;
-        StateName = "statestore";
         Schedulers = new TypeList<IScheduler>();
     }
 }
