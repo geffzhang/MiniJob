@@ -8,6 +8,7 @@ using MiniJob.Localization;
 using MiniJob.Menus;
 using MiniJob.Processors;
 using MiniJob.Scheduler;
+using Polly;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -324,13 +325,14 @@ public class MiniJobModule : AbpModule
         var lifeTime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
         lifeTime.ApplicationStarted.Register(() =>
         {
-            // 等Sidecar启动
-            Thread.Sleep(10000);
             var options = app.ApplicationServices.GetRequiredService<IOptions<MiniJobSchedulerOptions>>().Value;
             foreach (var type in options.Schedulers)
             {
                 var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
-                AsyncHelper.RunSync(() => scheduler.StartAsync());
+
+                Policy.Handle<Exception>()
+                    .WaitAndRetry(3, i => TimeSpan.FromSeconds(Math.Pow(2, i)))
+                    .Execute(() => AsyncHelper.RunSync(() => scheduler.StartAsync()));
             }
         });
     }
@@ -380,15 +382,11 @@ public class MiniJobModule : AbpModule
 
     public override void OnApplicationShutdown(ApplicationShutdownContext context)
     {
-        var daprOptions = context.ServiceProvider.GetRequiredService<IOptions<MiniJobDaprOptions>>().Value;
-        if (daprOptions.RunSidecar)
+        var options = context.ServiceProvider.GetRequiredService<IOptions<MiniJobSchedulerOptions>>().Value;
+        foreach (var type in options.Schedulers)
         {
-            var options = context.ServiceProvider.GetRequiredService<IOptions<MiniJobSchedulerOptions>>().Value;
-            foreach (var type in options.Schedulers)
-            {
-                var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
-                AsyncHelper.RunSync(() => scheduler.StopAsync());
-            }
+            var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
+            AsyncHelper.RunSync(() => scheduler.StopAsync());
         }
     }
 }

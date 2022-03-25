@@ -21,13 +21,13 @@ public static class WebContentDirectoryFinder
 
         if (Environment.GetEnvironmentVariable("NCrunch") == "1")
         {
-            while (!DirectoryContains(directoryInfo.FullName, "MiniJob.Web.csproj", SearchOption.AllDirectories))
+            while (!DirectoryContains(directoryInfo.FullName, "MiniJob.csproj", SearchOption.AllDirectories))
             {
                 directoryInfo = directoryInfo.Parent ?? throw new Exception("Could not find content root folder!");
             }
 
             var webProject = Directory.GetFiles(directoryInfo.FullName, string.Empty, SearchOption.AllDirectories)
-                .First(filePath => string.Equals(Path.GetFileName(filePath), "MiniJob.Web.csproj"));
+                .First(filePath => string.Equals(Path.GetFileName(filePath), "MiniJob.csproj"));
 
             return Path.GetDirectoryName(webProject);
         }
@@ -37,7 +37,7 @@ public static class WebContentDirectoryFinder
             directoryInfo = directoryInfo.Parent ?? throw new Exception("Could not find content root folder!");
         }
 
-        var webFolder = Path.Combine(directoryInfo.FullName, $"src{Path.DirectorySeparatorChar}MiniJob.Web");
+        var webFolder = Path.Combine(directoryInfo.FullName, $"src{Path.DirectorySeparatorChar}MiniJob");
         if (Directory.Exists(webFolder))
         {
             return webFolder;

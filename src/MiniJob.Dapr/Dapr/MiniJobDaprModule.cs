@@ -35,14 +35,11 @@ public class MiniJobDaprModule : AbpModule
             .Configure(options);
 
         // 配置Dapr环境变量
-        if (options.RunSidecar)
+        Environment.SetEnvironmentVariable("DAPR_HTTP_PORT", options.DaprHttpPort.ToString());
+        Environment.SetEnvironmentVariable("DAPR_GRPC_PORT", options.DaprGrpcPort.ToString());
+        if (!options.DaprApiToken.IsNullOrWhiteSpace())
         {
-            Environment.SetEnvironmentVariable("DAPR_HTTP_PORT", options.DaprHttpPort.ToString());
-            Environment.SetEnvironmentVariable("DAPR_GRPC_PORT", options.DaprGrpcPort.ToString());
-            if (!options.DaprApiToken.IsNullOrWhiteSpace())
-            {
-                Environment.SetEnvironmentVariable("DAPR_API_TOKEN", options.DaprApiToken);
-            }
+            Environment.SetEnvironmentVariable("DAPR_API_TOKEN", options.DaprApiToken);
         }
 
         context.Services.PreConfigure<IMvcBuilder>(builder =>

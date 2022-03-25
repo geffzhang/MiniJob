@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{EBF79182-B0B1-4856-8A06-C7B76E2839BC}"
 	ProjectSection(SolutionItems) = preProject
 		dapr\config.yaml = dapr\config.yaml
+		dapr\run-daprd.ps1 = dapr\run-daprd.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gateways", "gateways", "{0400A1FA-BA58-4432-9824-E9CD4645B5B4}"
