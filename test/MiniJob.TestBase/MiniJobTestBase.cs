@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Volo.Abp;
-using Volo.Abp.Modularity;
-using Volo.Abp.Testing;
+using Microsoft.Extensions.Hosting;
+using Volo.Abp.AspNetCore.TestBase;
 using Volo.Abp.Uow;
 
 namespace MiniJob;
 
 /* All test classes are derived from this class, directly or indirectly.
  */
-public abstract class MiniJobTestBase<TStartupModule> : AbpIntegratedTest<TStartupModule>
-    where TStartupModule : IAbpModule
+public abstract class MiniJobTestBase : AbpAspNetCoreIntegratedTestBase<MiniJobWebTestStartup>
 {
-    protected override void SetAbpApplicationCreationOptions(AbpApplicationCreationOptions options)
+    protected override IHostBuilder CreateHostBuilder()
     {
-        options.UseAutofac();
+        return base
+            .CreateHostBuilder()
+            .UseContentRoot(WebContentDirectoryFinder.CalculateContentRootFolder());
     }
 
     protected virtual Task WithUnitOfWorkAsync(Func<Task> func)
