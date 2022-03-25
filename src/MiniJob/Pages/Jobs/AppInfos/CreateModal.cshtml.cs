@@ -8,9 +8,9 @@ public class CreateModalModel : MiniJobPageModel
     [BindProperty]
     public CreateUpdateAppInfoDto AppInfo { get; set; }
 
-    private readonly IAppInfoAppService _appInfoAppService;
+    private readonly AppInfoAppService _appInfoAppService;
 
-    public CreateModalModel(IAppInfoAppService appInfoAppService)
+    public CreateModalModel(AppInfoAppService appInfoAppService)
     {
         _appInfoAppService = appInfoAppService;
     }

@@ -12,11 +12,10 @@ public class JobInfoAppService :
         JobInfoDto,
         Guid,
         PagedAndSortedResultRequestDto,
-        CreateUpdateJobInfoDto>,
-    IJobInfoAppService
+        CreateUpdateJobInfoDto>
 {
     public JobInfoAppService(IRepository<JobInfo, Guid> repository)
-    : base(repository)
+        : base(repository)
     {
         GetPolicyName = MiniJobPermissions.JobInfos.Default;
         GetListPolicyName = MiniJobPermissions.JobInfos.Default;

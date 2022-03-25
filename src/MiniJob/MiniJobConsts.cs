@@ -24,6 +24,11 @@ public static class MiniJobConsts
     public static readonly List<string> DownloadProtocol = new() { "http", "https", "ftp" };
 
     /// <summary>
+    /// TaskTracker 长时间未上报
+    /// </summary>
+    public const string ReportTimeout = "worker report timeout, maybe TaskTracker down";
+
+    /// <summary>
     /// 支持的数据库类型
     /// </summary>
     public static class DatabaseSupport

@@ -13,11 +13,6 @@ public class MiniJobSchedulerOptions
     public int AppSchedulePeriod { get; set; }
 
     /// <summary>
-    /// 任务实例调度周期,单位毫秒,默认为 10000
-    /// </summary>
-    public int JobInstanceSchedulePeriod { get; set; }
-
-    /// <summary>
     /// 任务实例清理周期,单位小时,默认为12小时
     /// </summary>
     public int CleanSchedulePeriod { get; set; }
@@ -32,7 +27,6 @@ public class MiniJobSchedulerOptions
     public MiniJobSchedulerOptions()
     {
         AppSchedulePeriod = 15000;
-        JobInstanceSchedulePeriod = 10000;
         CleanSchedulePeriod = 12;
         JobInstanceRetention = 3;
         Schedulers = new TypeList<IScheduler>();

@@ -55,8 +55,15 @@ public class ApplicationSchedulerActor : MiniJobActor, IApplicationSchedulerActo
         var enableAppInfos = await AppInfoRepository.GetListAsync(p => p.IsEnabled);
         foreach (var appInfo in enableAppInfos)
         {
-            var jobTracker = ActorHelper.CreateActor<IJobTrackerActor, JobTrackerActor>(appInfo.Id.ToString());
-            await jobTracker.TrackAsync();
+            // 周期扫描待触发的任务，生成任务实例等待下发
+            await ActorHelper
+                .CreateActor<IJobTrackerActor, JobTrackerActor>(appInfo.Id.ToString())
+                .TrackAsync();
+
+            // 周期扫描任务实例状态，对异常状态的任务实例重新下发(故障转移)
+            await ActorHelper
+                .CreateActor<IJobInstanceStatusCheckActor, JobInstanceStatusCheckActor>(appInfo.Id.ToString())
+                .InstanceStatusCheckAsync();
         }
     }
 }

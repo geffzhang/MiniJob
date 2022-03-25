@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MiniJob.Dapr.Actors;
 using MiniJob.Entities;
 using MiniJob.Entities.Jobs;
+using MiniJob.Services.DomainServices;
 using System.Diagnostics;
 using Volo.Abp.DistributedLocking;
 using Volo.Abp.Domain.Repositories;
@@ -16,19 +17,22 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
     protected IJobInfoRepository JobInfoRepository { get; }
     protected IRepository<JobInstance, Guid> JobInstanceRepository { get; }
     protected MiniJobSchedulerOptions MiniJobOptions { get; }
+    protected SchedulerService DispatchService { get; }
 
     public JobTrackerActor(
         ActorHost host,
         IAbpDistributedLock distributedLock,
         IJobInfoRepository jobInfoRepository,
         IRepository<JobInstance, Guid> jobInstanceRepository,
-        IOptions<MiniJobSchedulerOptions> options)
+        IOptions<MiniJobSchedulerOptions> options,
+        SchedulerService dispatchService)
         : base(host)
     {
         DistributedLock = distributedLock;
         JobInfoRepository = jobInfoRepository;
         JobInstanceRepository = jobInstanceRepository;
         MiniJobOptions = options.Value;
+        DispatchService = dispatchService;
     }
 
     [UnitOfWork]
@@ -126,8 +130,7 @@ public class JobTrackerActor : MiniJobActor, IJobTrackerActor
             await UpdateJobNextTriggerTime(jobInfo);
 
             // 激活派发Actor，到期后派送任务实例到Worker
-            await ActorHelper.CreateActor<IJobDispatchActor, JobDispatchActor>(jobInstance.Id.ToString())
-                .DispatchAsync(dueTime);
+            await DispatchService.DispatchAsync(jobInstance.Id, dueTime);
         }
     }
 

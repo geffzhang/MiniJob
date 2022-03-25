@@ -12,8 +12,7 @@ public class AppInfoAppService :
         AppInfoDto,
         Guid,
         PagedAndSortedResultRequestDto,
-        CreateUpdateAppInfoDto>,
-    IAppInfoAppService
+        CreateUpdateAppInfoDto>
 {
     public AppInfoAppService(IRepository<AppInfo, Guid> repository)
         : base(repository)

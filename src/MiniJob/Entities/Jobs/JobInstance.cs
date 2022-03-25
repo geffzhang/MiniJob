@@ -61,6 +61,11 @@ public class JobInstance : AuditedAggregateRoot<Guid>, IMultiTenant
     public virtual DateTime? FinishedTime { get; set; }
 
     /// <summary>
+    /// 最后上报时间
+    /// </summary>
+    public virtual DateTime? LastReportTime { get; set; }
+
+    /// <summary>
     /// 重试次数
     /// </summary>
     public virtual int TryCount { get; set; }

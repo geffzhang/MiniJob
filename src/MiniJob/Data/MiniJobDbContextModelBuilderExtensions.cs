@@ -85,6 +85,7 @@ public static class MiniJobDbContextModelBuilderExtensions
             b.Property(p => p.ExpectedTriggerTime);
             b.Property(p => p.ActualTriggerTime);
             b.Property(p => p.FinishedTime);
+            b.Property(p => p.LastReportTime);
             b.Property(p => p.TryCount);
         });
 

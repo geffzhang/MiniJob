@@ -3,22 +3,47 @@
 public static class EnumExtensions
 {
     /// <summary>
-    /// 广义的运行状态
+    /// 任务实例是否结束状态
     /// </summary>
-    /// <param name="instanceStatus"></param>
+    /// <param name="jobInstanceStatus"></param>
     /// <returns></returns>
-    public static List<InstanceStatus> GeneralizedRuningStatus(this InstanceStatus instanceStatus)
+    public static bool IsFinished(this InstanceStatus jobInstanceStatus)
     {
-        return new List<InstanceStatus> { InstanceStatus.WaitingDispatch, InstanceStatus.WaitingWorkerReceive, InstanceStatus.Runing };
+        return jobInstanceStatus == InstanceStatus.Failed ||
+            jobInstanceStatus == InstanceStatus.Succeed ||
+            jobInstanceStatus == InstanceStatus.Canceled ||
+            jobInstanceStatus == InstanceStatus.Stoped;
     }
 
     /// <summary>
-    /// 结束状态
+    /// 秒级任务是否正在运行中
     /// </summary>
-    /// <param name="instanceStatus"></param>
+    /// <param name="jobInstanceStatus"></param>
     /// <returns></returns>
-    public static List<InstanceStatus> FinishedStatus(this InstanceStatus instanceStatus)
+    public static bool IsRunning(this InstanceStatus jobInstanceStatus)
     {
-        return new List<InstanceStatus> { InstanceStatus.Failed, InstanceStatus.Succeed, InstanceStatus.Canceled, InstanceStatus.Stoped };
+        return jobInstanceStatus == InstanceStatus.WaitingDispatch ||
+            jobInstanceStatus == InstanceStatus.WaitingWorkerReceive ||
+            jobInstanceStatus == InstanceStatus.Runing;
+    }
+
+    /// <summary>
+    /// 是否秒级任务
+    /// </summary>
+    /// <param name="timeExpression"></param>
+    /// <returns></returns>
+    public static bool IsSecondType(this TimeExpressionType timeExpression)
+    {
+        return timeExpression == TimeExpressionType.SecondDelay;
+    }
+
+    /// <summary>
+    /// 是否分钟级任务
+    /// </summary>
+    /// <param name="timeExpression"></param>
+    /// <returns></returns>
+    public static bool IsMinuteType(this TimeExpressionType timeExpression)
+    {
+        return timeExpression == TimeExpressionType.Cron || timeExpression == TimeExpressionType.FixedRate;
     }
 }

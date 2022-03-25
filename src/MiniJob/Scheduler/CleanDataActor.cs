@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace MiniJob.Scheduler;
 
-public class CleanDataActor : MiniJobActor, IRemindable, ICleanDataActor, IScheduler
+public class CleanDataActor : MiniJobActor, IRemindable, ICleanDataActor
 {
     private const string ReminderName = "CleanDataReminder";
 

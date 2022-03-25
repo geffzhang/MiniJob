@@ -12,9 +12,9 @@ public class EditModalModel : MiniJobPageModel
     [BindProperty]
     public CreateUpdateJobInfoDto JobInfo { get; set; }
 
-    private readonly IJobInfoAppService _jobInfoAppService;
+    private readonly JobInfoAppService _jobInfoAppService;
 
-    public EditModalModel(IJobInfoAppService jobInfoAppService)
+    public EditModalModel(JobInfoAppService jobInfoAppService)
     {
         _jobInfoAppService = jobInfoAppService;
     }
