@@ -1,15 +1,11 @@
 ﻿using Lsw.Abp.AspNetCore.Mvc.UI.Theme.Stisla;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MiniJob.Dapr;
-using MiniJob.Dapr.Actors;
 using MiniJob.Data;
 using MiniJob.Localization;
 using MiniJob.Menus;
 using MiniJob.Processors;
 using MiniJob.Scheduler;
-using MiniJob.Services.DomainServices;
-using Polly;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -46,7 +42,6 @@ using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.Web;
-using Volo.Abp.Threading;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
@@ -119,7 +114,6 @@ public class MiniJobModule : AbpModule
         });
 
         AutoAddSchedulers(context.Services);
-        AutoRegisterProcessors(context.Services);
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -292,27 +286,6 @@ public class MiniJobModule : AbpModule
         services.Configure<MiniJobSchedulerOptions>(options =>
         {
             options.Schedulers.AddIfNotContains(schedulerTypes);
-        });
-    }
-
-    private static void AutoRegisterProcessors(IServiceCollection services)
-    {
-        var processorTypes = new List<Type>();
-
-        services.OnRegistred(context =>
-        {
-            if (typeof(IProcessor).IsAssignableFrom(context.ImplementationType))
-            {
-                processorTypes.AddIfNotContains(context.ImplementationType);
-            }
-        });
-
-        services.Configure<MiniJobProcessorOptions>(options =>
-        {
-            foreach (var processorType in processorTypes)
-            {
-                options.AddProcessor(processorType);
-            }
         });
     }
 

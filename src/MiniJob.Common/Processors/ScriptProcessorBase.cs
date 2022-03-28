@@ -1,4 +1,5 @@
-﻿using MiniJob.Command;
+﻿using Microsoft.Extensions.Logging;
+using MiniJob.Command;
 using System.Runtime.InteropServices;
 
 namespace MiniJob.Processors;
