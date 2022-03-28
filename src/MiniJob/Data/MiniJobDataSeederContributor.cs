@@ -1,4 +1,5 @@
-﻿using MiniJob.Entities;
+﻿using Microsoft.Extensions.Options;
+using MiniJob.Entities;
 using MiniJob.Entities.Jobs;
 using MiniJob.Processors;
 using Volo.Abp.Data;
@@ -16,24 +17,38 @@ public class MiniJobDataSeederContributor : IDataSeedContributor, ITransientDepe
     protected IGuidGenerator GuidGenerator { get; }
     protected IClock Clock { get; }
     protected IJsonSerializer JsonSerializer { get; }
+    protected MiniJobProcessorOptions ProcessorOptions { get; }
 
     public MiniJobDataSeederContributor(
         IRepository<AppInfo, Guid> appRepository,
         IGuidGenerator guidGenerator,
         IClock clock,
-        IJsonSerializer jsonSerializer)
+        IJsonSerializer jsonSerializer,
+        IOptions<MiniJobProcessorOptions> options)
     {
         _appRepository = appRepository;
         GuidGenerator = guidGenerator;
         Clock = clock;
         JsonSerializer = jsonSerializer;
+        ProcessorOptions = options.Value;
     }
 
     public async Task SeedAsync(DataSeedContext context)
     {
+        await CreateDefaultAppAsync(context);
+    }
+
+    private async Task CreateDefaultAppAsync(DataSeedContext context)
+    {
         if (await _appRepository.GetCountAsync() <= 0)
         {
-            var appInfo = new AppInfo(GuidGenerator.Create(), "TestApp", "演示任务", context.TenantId);
+            var appInfo = new AppInfo(GuidGenerator.Create(), "Default", "默认应用(不可删除)", context.TenantId);
+
+            foreach (var processorConfiguration in ProcessorOptions.GetProcessors())
+            {
+                var processor = new ProcessorInfo(GuidGenerator.Create(), appInfo.Id, processorConfiguration.ProcessorType);
+                appInfo.ProcessorInfos.Add(processor);
+            }
 
             // Http 任务
             var httpArgs = new HttpArgs()

@@ -35,6 +35,11 @@ public class AppInfo : AuditedAggregateRoot<Guid>, IMultiTenant
     /// </summary>
     public virtual ICollection<JobInfo> JobInfos { get; set; }
 
+    /// <summary>
+    /// 应用的执行器信息
+    /// </summary>
+    public virtual ICollection<ProcessorInfo> ProcessorInfos { get; set; }
+
     protected AppInfo() { }
 
     public AppInfo(
@@ -50,6 +55,7 @@ public class AppInfo : AuditedAggregateRoot<Guid>, IMultiTenant
         IsEnabled = true;
 
         JobInfos = new Collection<JobInfo>();
+        ProcessorInfos = new Collection<ProcessorInfo>();
     }
 
     public virtual void Disable()
