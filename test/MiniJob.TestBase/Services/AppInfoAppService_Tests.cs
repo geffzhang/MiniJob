@@ -7,11 +7,11 @@ namespace MiniJob.Jobs;
 
 public class AppInfoAppService_Tests : MiniJobTestBase
 {
-    private readonly IAppInfoAppService _appInfoAppService;
+    private readonly AppInfoAppService _appInfoAppService;
 
     public AppInfoAppService_Tests()
     {
-        _appInfoAppService = GetRequiredService<IAppInfoAppService>();
+        _appInfoAppService = GetRequiredService<AppInfoAppService>();
     }
 
     [Fact]

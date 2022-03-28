@@ -8,6 +8,7 @@ using MiniJob.Localization;
 using MiniJob.Menus;
 using MiniJob.Processors;
 using MiniJob.Scheduler;
+using MiniJob.Services.DomainServices;
 using Polly;
 using Volo.Abp;
 using Volo.Abp.Account;
@@ -118,7 +119,7 @@ public class MiniJobModule : AbpModule
         });
 
         AutoAddSchedulers(context.Services);
-        RegisterJobs(context.Services);
+        AutoRegisterProcessors(context.Services);
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -294,23 +295,23 @@ public class MiniJobModule : AbpModule
         });
     }
 
-    private static void RegisterJobs(IServiceCollection services)
+    private static void AutoRegisterProcessors(IServiceCollection services)
     {
-        var jobTypes = new List<Type>();
+        var processorTypes = new List<Type>();
 
         services.OnRegistred(context =>
         {
             if (typeof(IProcessor).IsAssignableFrom(context.ImplementationType))
             {
-                jobTypes.AddIfNotContains(context.ImplementationType);
+                processorTypes.AddIfNotContains(context.ImplementationType);
             }
         });
 
         services.Configure<MiniJobProcessorOptions>(options =>
         {
-            foreach (var jobType in jobTypes)
+            foreach (var processorType in processorTypes)
             {
-                options.AddProcessor(jobType);
+                options.AddProcessor(processorType);
             }
         });
     }
@@ -323,17 +324,9 @@ public class MiniJobModule : AbpModule
         // 要先启动Sidecar才能启动调度器，而ApplicationStarted的注册顺序与执行顺序相反，
         // 所以启动调度器方法要先注册，故应放在OnPreApplicationInitialization方法中注册
         var lifeTime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
-        lifeTime.ApplicationStarted.Register(() =>
+        lifeTime.ApplicationStarted.Register(async () =>
         {
-            var options = app.ApplicationServices.GetRequiredService<IOptions<MiniJobSchedulerOptions>>().Value;
-            foreach (var type in options.Schedulers)
-            {
-                var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
-
-                Policy.Handle<Exception>()
-                    .WaitAndRetry(3, i => TimeSpan.FromSeconds(Math.Pow(2, i)))
-                    .Execute(() => AsyncHelper.RunSync(() => scheduler.StartAsync()));
-            }
+            await app.ApplicationServices.GetRequiredService<ISchedulerManager>().StartAsync();
         });
     }
 
@@ -380,13 +373,8 @@ public class MiniJobModule : AbpModule
         app.UseConfiguredEndpoints();
     }
 
-    public override void OnApplicationShutdown(ApplicationShutdownContext context)
+    public override async Task OnApplicationShutdownAsync(ApplicationShutdownContext context)
     {
-        var options = context.ServiceProvider.GetRequiredService<IOptions<MiniJobSchedulerOptions>>().Value;
-        foreach (var type in options.Schedulers)
-        {
-            var scheduler = (IScheduler)ActorHelper.CreateDefaultActor(type);
-            AsyncHelper.RunSync(() => scheduler.StopAsync());
-        }
+        await context.ServiceProvider.GetRequiredService<ISchedulerManager>().StopAsync();
     }
 }

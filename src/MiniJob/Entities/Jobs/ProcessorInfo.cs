@@ -8,8 +8,6 @@ namespace MiniJob.Entities.Jobs;
 /// </summary>
 public class ProcessorInfo : AuditedAggregateRoot<Guid>
 {
-    public virtual Guid AppId { get; set; }
-
     /// <summary>
     /// 简短名称，如：HttpExecutor
     /// </summary>
@@ -29,7 +27,7 @@ public class ProcessorInfo : AuditedAggregateRoot<Guid>
     /// <summary>
     /// 是否内置的执行器(内置执行器可以选择在Server上执行)
     /// </summary>
-    public virtual bool IsBuiltInExecutor { get; set; }
+    public bool IsBuiltInExecutor => WorkerName == "MiniJob";
 
     /// <summary>
     /// 是否可用
@@ -38,11 +36,13 @@ public class ProcessorInfo : AuditedAggregateRoot<Guid>
 
     protected ProcessorInfo() { }
 
-    public ProcessorInfo(Guid id, string fullName, string workerName)
+    public ProcessorInfo(Guid id, Type processorType)
         : base(id)
     {
-        FullName = fullName;
-        WorkerName = workerName;
+        IsEnabled = true;
+        Name = processorType.Name;
+        FullName = processorType.FullName;
+        WorkerName = processorType.Assembly.FullName;
     }
 
     public override string ToString()

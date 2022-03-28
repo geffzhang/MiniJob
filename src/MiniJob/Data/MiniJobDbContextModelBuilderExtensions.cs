@@ -98,9 +98,7 @@ public static class MiniJobDbContextModelBuilderExtensions
             b.Property(p => p.Name).HasMaxLength(128);
             b.Property(p => p.FullName).HasMaxLength(256);
             b.Property(p => p.WorkerName).HasMaxLength(128);
-            b.Property(p => p.IsBuiltInExecutor);
             b.Property(p => p.IsEnabled);
-            b.Property(p => p.AppId);
         });
 
         builder.Entity<WorkerInfo>(b =>
