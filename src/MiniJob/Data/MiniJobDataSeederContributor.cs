@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using MiniJob.Entities;
 using MiniJob.Entities.Jobs;
 using MiniJob.Processors;
 using Volo.Abp.Data;
@@ -50,41 +49,21 @@ public class MiniJobDataSeederContributor : IDataSeedContributor, ITransientDepe
                 appInfo.ProcessorInfos.Add(processor);
             }
 
-            // Http 任务
-            var httpArgs = new HttpArgs()
+            foreach (var job in ProcessorOptions.Jobs)
             {
-                Url = "https://v1.hitokoto.cn/?c=k",
-                CheckKey = "type",
-                CheckValue = "k",
-            };
-            var httpJobInfo = new JobInfo(GuidGenerator.Create(), appInfo.Id, "Http任务示例", string.Empty, context.TenantId)
-            {
-                ProcessorType = ProcessorType.Http,
-                JobArgs = JsonSerializer.Serialize(httpArgs),
-                TimeExpression = TimeExpressionType.FixedRate,
-                TimeExpressionValue = "120",
-                Timeout = TimeSpan.FromSeconds(30),
-                Description = "每两分钟获取一次一言接口数据",
-                ProcessorInfo = typeof(HttpProcessor).FullName,
-                MisfireStrategy = MisfireStrategy.FireOnceNow
-            };
-            httpJobInfo.CalculateNextTriggerTime(Clock.Now);
-            appInfo.JobInfos.Add(httpJobInfo);
-
-            // Shell 任务
-            var shellJobInfo = new JobInfo(GuidGenerator.Create(), appInfo.Id, "Shell任务示例", string.Empty, context.TenantId)
-            {
-                ProcessorType = ProcessorType.Shell,
-                JobArgs = "@echo off & echo Hello Minijob",
-                TimeExpression = TimeExpressionType.FixedRate,
-                TimeExpressionValue = "120",
-                Timeout = TimeSpan.FromSeconds(30),
-                Description = "每两分钟打印Hello MiniJob",
-                ProcessorInfo = typeof(ShellProcessor).FullName,
-                MisfireStrategy = MisfireStrategy.FireOnceNow
-            };
-            shellJobInfo.CalculateNextTriggerTime(Clock.Now);
-            appInfo.JobInfos.Add(shellJobInfo);
+                var jobInfo = new JobInfo(GuidGenerator.Create(), appInfo.Id, job.Name, context.TenantId)
+                {
+                    ProcessorType = job.ProcessorType,
+                    JobArgs = job.JobArgs,
+                    TimeExpression = job.TimeExpressionType,
+                    TimeExpressionValue = job.TimeExpressionValue,
+                    MisfireStrategy = job.MisfireStrategy,
+                    ProcessorInfo = job.Type.FullName,
+                    Description = job.Description
+                };
+                jobInfo.CalculateNextTriggerTime(Clock.Now);
+                appInfo.JobInfos.Add(jobInfo);
+            }
 
             await _appRepository.InsertAsync(appInfo, true);
         }

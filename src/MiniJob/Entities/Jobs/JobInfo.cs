@@ -176,14 +176,12 @@ public class JobInfo : AuditedAggregateRoot<Guid>, IMultiTenant
         [NotNull] Guid id,
         [NotNull] Guid appId,
         [NotNull] string jobName,
-        [MaybeNull] string jobArgs,
         [MaybeNull] Guid? tenantId = null)
         : base(id)
     {
         TenantId = tenantId;
         AppId = appId;
         JobName = jobName;
-        JobArgs = jobArgs;
         IsEnabled = true;
 
         JobPriority = JobPriority.Normal;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Volo.Abp.Collections;
 
 namespace MiniJob.Processors;
 
@@ -10,6 +11,8 @@ public class MiniJobProcessorOptions
     private readonly Dictionary<Type, ProcessorConfiguration> _processorConfigurationsByType;
     private readonly Dictionary<string, ProcessorConfiguration> _processorConfigurationsByName;
 
+    public List<JobConfiguration> Jobs { get; set; }
+
     /// <summary>
     /// Default: true.
     /// </summary>
@@ -19,6 +22,7 @@ public class MiniJobProcessorOptions
     {
         _processorConfigurationsByType = new Dictionary<Type, ProcessorConfiguration>();
         _processorConfigurationsByName = new Dictionary<string, ProcessorConfiguration>();
+        Jobs = new List<JobConfiguration>();
     }
 
     /// <summary>
@@ -102,5 +106,16 @@ public class MiniJobProcessorOptions
     {
         _processorConfigurationsByType[processorConfiguration.ProcessorType] = processorConfiguration;
         _processorConfigurationsByName[processorConfiguration.ProcessorName] = processorConfiguration;
+        AddJob(processorConfiguration);
+    }
+
+    /// <summary>
+    /// 添加任务
+    /// </summary>
+    /// <param name="processorConfiguration"></param>
+    public void AddJob(ProcessorConfiguration processorConfiguration)
+    {
+        var jobConfigs = JobConfigAttribute.GetJobConfiguration(processorConfiguration.ProcessorType);
+        Jobs.AddRange(jobConfigs);
     }
 }
