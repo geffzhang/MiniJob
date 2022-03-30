@@ -7,8 +7,6 @@ namespace MiniJob.Processors;
 /// </summary>
 [JobConfig("Test", 
     Description = "测试任务",
-    JobArgs = "@echo off & echo test job",
-    ProcessorType = Entities.ProcessorType.Shell,
     TimeExpressionType = Entities.TimeExpressionType.FixedRate,
     TimeExpressionValue = "120")]
 public class TestProcessor : ProcessorBase

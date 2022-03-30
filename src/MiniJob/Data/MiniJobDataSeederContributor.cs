@@ -53,13 +53,16 @@ public class MiniJobDataSeederContributor : IDataSeedContributor, ITransientDepe
             {
                 var jobInfo = new JobInfo(GuidGenerator.Create(), appInfo.Id, job.Name, context.TenantId)
                 {
-                    ProcessorType = job.ProcessorType,
+                    ProcessorType = Entities.ProcessorType.CSharp,
                     JobArgs = job.JobArgs,
                     TimeExpression = job.TimeExpressionType,
                     TimeExpressionValue = job.TimeExpressionValue,
                     MisfireStrategy = job.MisfireStrategy,
-                    ProcessorInfo = job.Type.FullName,
-                    Description = job.Description
+                    ProcessorInfo = job.ProcessorType.FullName,
+                    Description = job.Description,
+                    ExecuteType = job.ExecuteType,
+                    JobPriority = job.JobPriority,
+                    IsEnabled = job.IsEnabled,
                 };
                 jobInfo.CalculateNextTriggerTime(Clock.Now);
                 appInfo.JobInfos.Add(jobInfo);

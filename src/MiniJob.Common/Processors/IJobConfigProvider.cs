@@ -8,13 +8,17 @@ public interface IJobConfigProvider
 
     string Description { get; set; }
 
-    ProcessorType ProcessorType { get; set; }
+    TimeExpressionType TimeExpressionType { get; set; }
 
-    public TimeExpressionType TimeExpressionType { get; set; }
+    string TimeExpressionValue { get; set; }
 
-    public string TimeExpressionValue { get; set; }
+    string JobArgs { get; set; }
 
-    public string JobArgs { get; set; }
+    MisfireStrategy MisfireStrategy { get; set; }
 
-    public MisfireStrategy MisfireStrategy { get; set; }
+    ExecuteType ExecuteType { get; set; }
+
+    JobPriority JobPriority { get; set; }
+
+    bool IsEnabled { get; set; }
 }

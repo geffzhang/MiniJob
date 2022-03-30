@@ -11,8 +11,6 @@ public class JobConfiguration
 
     public string Description { get; set; }
 
-    public ProcessorType ProcessorType { get; set; }
-
     public TimeExpressionType TimeExpressionType { get; set; }
 
     public string TimeExpressionValue { get; set; }
@@ -21,5 +19,11 @@ public class JobConfiguration
 
     public MisfireStrategy MisfireStrategy { get; set; }
 
-    public Type Type { get; set; }
+    public ExecuteType ExecuteType { get; set; }
+
+    public JobPriority JobPriority { get; set; }
+
+    public bool IsEnabled { get; set; }
+
+    public Type ProcessorType { get; set; }
 }

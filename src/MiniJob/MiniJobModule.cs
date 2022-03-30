@@ -4,7 +4,6 @@ using MiniJob.Dapr;
 using MiniJob.Data;
 using MiniJob.Localization;
 using MiniJob.Menus;
-using MiniJob.Processors;
 using MiniJob.Scheduler;
 using Volo.Abp;
 using Volo.Abp.Account;

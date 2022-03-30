@@ -5,14 +5,12 @@ namespace MiniJob.Processors;
 /// <summary>
 /// 任务配置，在任务处理器加上此注解
 /// </summary>
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class JobConfigAttribute : Attribute, IJobConfigProvider
 {
     public string Name { get; }
 
     public string Description { get; set; }
-
-    public ProcessorType ProcessorType { get; set; }
 
     public TimeExpressionType TimeExpressionType { get; set; }
 
@@ -22,12 +20,20 @@ public class JobConfigAttribute : Attribute, IJobConfigProvider
 
     public MisfireStrategy MisfireStrategy { get; set; }
 
+    public ExecuteType ExecuteType { get; set; }
+
+    public JobPriority JobPriority { get; set; }
+
+    public bool IsEnabled { get; set; }
+
     public JobConfigAttribute(string name)
     {
         Name = name;
-        ProcessorType = ProcessorType.CSharp;
         TimeExpressionType = TimeExpressionType.Api;
         MisfireStrategy = MisfireStrategy.Ignore;
+        ExecuteType = ExecuteType.Standalone;
+        JobPriority = JobPriority.Normal;
+        IsEnabled = true;
     }
 
     public static IEnumerable<JobConfiguration> GetJobConfiguration<TProcessor>()
@@ -45,11 +51,13 @@ public class JobConfigAttribute : Attribute, IJobConfigProvider
                 Name = p.Name,
                 JobArgs = p.JobArgs,
                 MisfireStrategy = p.MisfireStrategy,
-                ProcessorType = p.ProcessorType,
                 TimeExpressionType = p.TimeExpressionType,
                 TimeExpressionValue = p.TimeExpressionValue,
-                Type = processorType,
-                Description = p.Description
+                ProcessorType = processorType,
+                Description = p.Description,
+                ExecuteType = p.ExecuteType,
+                JobPriority = p.JobPriority,
+                IsEnabled = p.IsEnabled
             });
     }
 }

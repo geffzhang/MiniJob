@@ -249,7 +249,6 @@ public class JobDispatchActor : MiniJobActor, IJobDispatchActor
             MaxTryCount = jobInfo.MaxTryCount,
             TryCount = 0,
             TaskId = Guid.NewGuid(),
-            ProcessorType = jobInfo.ProcessorType,
             ProcessorInfo = jobInfo.ProcessorInfo,
         };
     }

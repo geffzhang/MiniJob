@@ -19,7 +19,7 @@ public class Program
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
             .Enrich.FromLogContext()
 #if DEBUG
-            .WriteTo.Async(c => c.File("Logs/logs.txt"))
+            .WriteTo.Async(c => c.File("Logs/logs.txt", rollingInterval: RollingInterval.Day))
             .WriteTo.Async(c => c.Console());
 #else
             .WriteTo.Async(c => c.File("Logs/logs.txt"));

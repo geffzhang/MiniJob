@@ -65,11 +65,6 @@ public class ProcessorContext
     public virtual string ProcessorInfo { get; set; }
 
     /// <summary>
-    /// 执行器类型
-    /// </summary>
-    public virtual ProcessorType ProcessorType { get; set; }
-
-    /// <summary>
     /// 获取参数，优先获取实例参数，不存在则获取任务参数
     /// </summary>
     /// <returns></returns>
