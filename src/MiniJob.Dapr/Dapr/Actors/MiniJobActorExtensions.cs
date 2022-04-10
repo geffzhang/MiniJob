@@ -48,7 +48,7 @@ public static class MiniJobActorExtensions
 
         try
         {
-            Process.Start(procStartInfo);
+            System.Diagnostics.Process.Start(procStartInfo);
         }
         catch (Exception)
         {
