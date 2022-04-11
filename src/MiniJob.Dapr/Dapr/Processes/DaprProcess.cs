@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MiniJob.Dapr.Security;
 
 namespace MiniJob.Dapr.Processes;
 
@@ -10,7 +11,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
     private readonly string _defaultExeName;
     private Func<DaprOptions> _startOptionsAccessor; // Returns latest startup options
     private TOptions _pendingOptions; // Options used to start process, stored temporarily until startup complete.
-    private ILogger _daprLogger;
+    protected ILogger Logger { get; set; }
     private System.Timers.Timer _restartTimer;
     private IProcess _underlyingProcess;
     private Task _startupTask;
@@ -41,13 +42,13 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             if (IsRunning)
             {
                 // Already running
-                _daprLogger?.LogWarning("Process {DaprProcessName} PID:{DaprProcessId} is already running", Name, Id);
+                Logger?.LogWarning("Process {DaprProcessName} PID:{DaprProcessId} is already running", Name, Id);
                 return false;
             }
             else if (Status != DaprProcessStatus.Stopped)
             {
                 // Must be in Stopped status
-                _daprLogger?.LogWarning("Unable to start Dapr process {DaprProcessName} as it is currently in the following state: {DaprProcessStatus}", Name, Status);
+                Logger?.LogWarning("Unable to start Dapr process {DaprProcessName} as it is currently in the following state: {DaprProcessStatus}", Name, Status);
                 return false;
             }
         }
@@ -66,7 +67,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
         {
             if (IsRunning || (Status != DaprProcessStatus.Stopped && Status != DaprProcessStatus.Disabled))
             {
-                _daprLogger?.LogInformation("Stopping Process {DaprProcessName} PID:{DaprProcessId}", Name, Id);
+                Logger?.LogInformation("Stopping Process {DaprProcessName} PID:{DaprProcessId}", Name, Id);
                 UpdateStatus(DaprProcessStatus.Stopping);
 
                 // Allow inheritor to cleanly shut down the process first
@@ -80,7 +81,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
 
             // Unassign stored variables
             _restartTimer?.Stop();
-            _daprLogger = null;
+            Logger = null;
             _pendingOptions = default;
             _underlyingProcess = null;
         }
@@ -89,7 +90,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
     public bool Restart(CancellationToken cancellationToken)
     {
         var startOptions = _startOptionsAccessor?.Invoke();
-        if (startOptions == null || _daprLogger == null)
+        if (startOptions == null || Logger == null)
         {
             throw new InvalidOperationException("Unable to attempt a restart. Process has not been previously started successfully.");
         }
@@ -106,14 +107,14 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
     {
         if (status != Status)
         {
-            _daprLogger?.LogInformation("Dapr Process Status Change: {DaprProcessStatusPrevious} -> {DaprProcessStatus}", Status, status);
+            Logger?.LogInformation("Dapr Process Status Change: {DaprProcessStatusPrevious} -> {DaprProcessStatus}", Status, status);
             Status = status;
 
             if (status == DaprProcessStatus.Started)
             {
                 // Successfully started. Store the options to retain ports for any future restart.
                 LastSuccessfulOptions = _pendingOptions;
-                _daprLogger?.LogInformation("Caching successful startup options for future restart attempts");
+                Logger?.LogInformation("Caching successful startup options for future restart attempts");
             }
         }
     }
@@ -177,26 +178,13 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
     protected virtual void OnStopping(CancellationToken cancellationToken) => Stopping?.Invoke(this, new DaprProcessStoppingEventArgs(cancellationToken));
 
     protected virtual void SetEnvironmentVariable(string key, string value) => Environment.SetEnvironmentVariable(key, value);
-
-#if NET35
-        private void BeginInitialize(DaprCancellationToken cancellationToken)
-        {
-            _startupThread = new System.Threading.Thread(Initialize);
-            _startupThread.Start(cancellationToken);
-        }
-
-        private void Initialize(object arg)
-        {
-            var cancellationToken = (DaprCancellationToken)arg;
-#else
     private void BeginInitialize(CancellationToken cancellationToken)
     {
-        _startupTask = System.Threading.Tasks.Task.Run(() => Initialize(cancellationToken), cancellationToken.CancellationToken);
+        _startupTask = Task.Run(() => Initialize(cancellationToken), cancellationToken);
     }
 
     private void Initialize(CancellationToken cancellationToken)
     {
-#endif
         try
         {
             // Enter Initializing State
@@ -210,11 +198,11 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             if (proposedOptions.Enabled == false)
             {
                 UpdateStatus(DaprProcessStatus.Disabled);
-                _daprLogger.LogInformation("Dapr Sidekick is disabled for {DaprProcessName}, Dapr process will not be launched", proposedOptions.ProcessName);
+                Logger.LogInformation("Dapr Sidekick is disabled for {DaprProcessName}, Dapr process will not be launched", proposedOptions.ProcessName);
                 return;
             }
 
-            _daprLogger.LogInformation("Dapr expected process name set to {DaprProcessName}", proposedOptions.ProcessName);
+            Logger.LogInformation("Dapr expected process name set to {DaprProcessName}", proposedOptions.ProcessName);
 
             // Check existing processes
             var attachableProcess = CheckExistingProcesses(proposedOptions);
@@ -228,7 +216,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             // Assign ports, retaining any from last used options if required.
             var portBuilder = new PortAssignmentBuilder<TOptions>();
             AssignPorts(portBuilder);
-            portBuilder.Build(proposedOptions, LastSuccessfulOptions, _daprLogger);
+            portBuilder.Build(proposedOptions, LastSuccessfulOptions);
 
             // Initialize expected locations and directories
             InitializeDirectories(proposedOptions);
@@ -246,7 +234,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             // If a default value is not defined, set it to 5 seconds. If negative value defined no restart required.
             if (proposedOptions.RestartAfterMillseconds.HasValue && proposedOptions.RestartAfterMillseconds <= 0)
             {
-                _daprLogger.LogWarning("Dapr process auto-restart disabled by RestartAfterMillseconds: {RestartAfterMillseconds}", proposedOptions.RestartAfterMillseconds);
+                Logger.LogWarning("Dapr process auto-restart disabled by RestartAfterMillseconds: {RestartAfterMillseconds}", proposedOptions.RestartAfterMillseconds);
             }
             else
             {
@@ -275,12 +263,12 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             // Restart if a timer is defined
             if (_restartTimer != null)
             {
-                _daprLogger.LogError(ex, "Process {DaprdProcessName} failed to start. Restarting in {DaprdProcessRestartMilliseconds}ms...", Name, _restartTimer.Interval);
+                Logger.LogError(ex, "Process {DaprdProcessName} failed to start. Restarting in {DaprdProcessRestartMilliseconds}ms...", Name, _restartTimer.Interval);
                 _restartTimer.Start();
             }
             else
             {
-                _daprLogger.LogError(ex, "Process {DaprdProcessName} failed to start, a restart will not be attempted", Name);
+                Logger.LogError(ex, "Process {DaprdProcessName} failed to start, a restart will not be attempted", Name);
             }
         }
     }
@@ -311,7 +299,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
         {
             // Set the variable
             SetEnvironmentVariable(entry.Key, Convert.ToString(entry.Value.SensitiveValue()));
-            _daprLogger.LogInformation("Environment variable {DaprEnvironmentVariableName} set to {DaprEnvironmentVariableValue}", entry.Key, entry.Value);
+            Logger.LogInformation("Environment variable {DaprEnvironmentVariableName} set to {DaprEnvironmentVariableValue}", entry.Key, entry.Value);
         }
     }
 
@@ -324,10 +312,10 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
 
         // Create the managed process wrapper
         var process = new ManagedProcess();
-        process.OutputDataReceived += (sender, args) => _dapr_daprLogger?.LogData(args.Data);
+        process.OutputDataReceived += (sender, args) => Logger?.LogData(args.Data, this);
 
         // Start the managed dapr process
-        process.Start(proposedOptions.ProcessFile, arguments, _daprLogger, cancellationToken: cancellationToken);
+        process.Start(proposedOptions.ProcessFile, arguments, cancellationToken: cancellationToken);
 
         // Handle unplanned exit
         process.UnplannedExit += (sender, args) =>
@@ -339,12 +327,12 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             // Restart if a timer is defined
             if (_restartTimer != null)
             {
-                _daprLogger.LogError("Process {DaprProcessName} exited unexpectedly. Restarting in {DaprdProcessRestartMilliseconds}ms...", Name, _restartTimer.Interval);
+                Logger.LogError("Process {DaprProcessName} exited unexpectedly. Restarting in {DaprdProcessRestartMilliseconds}ms...", Name, _restartTimer.Interval);
                 _restartTimer.Start();
             }
             else
             {
-                _daprLogger.LogError("Process {DaprProcessName} exited unexpectedly, a restart will not be attempted", Name);
+                Logger.LogError("Process {DaprProcessName} exited unexpectedly, a restart will not be attempted", Name);
             }
         };
 
@@ -360,7 +348,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
 
         // Attach to the process
         var process = new AttachedProcess(attachableProcess.Process);
-        _daprLogger.LogInformation("Attached to existing Dapr Process {DaprProcessName} PID:{DaprProcessId}", process.Name, process.Id);
+        Logger.LogInformation("Attached to existing Dapr Process {DaprProcessName} PID:{DaprProcessId}", process.Name, process.Id);
 
         // Started!
         UpdateStatus(DaprProcessStatus.Started);
@@ -417,32 +405,32 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             if (!Directory.Exists(proposedOptions.RuntimeDirectory))
             {
                 // Create the target directory
-                _daprLogger.LogInformation("Creating directory: {DaprRuntimeDirectory}", proposedOptions.RuntimeDirectory);
+                Logger.LogInformation("Creating directory: {DaprRuntimeDirectory}", proposedOptions.RuntimeDirectory);
                 Directory.CreateDirectory(proposedOptions.RuntimeDirectory);
             }
 
             // Log out the expected locations
-            _daprLogger.LogInformation("Dapr initial directory: {DaprInitialDirectory}", proposedOptions.InitialDirectory);
-            _daprLogger.LogInformation("Dapr runtime directory: {DaprRuntimeDirectory}", proposedOptions.RuntimeDirectory);
+            Logger.LogInformation("Dapr initial directory: {DaprInitialDirectory}", proposedOptions.InitialDirectory);
+            Logger.LogInformation("Dapr runtime directory: {DaprRuntimeDirectory}", proposedOptions.RuntimeDirectory);
 
             // Copy the process file if necessary
             var initialFileInfo = new FileInfo(initialFile);
             var runtimeFileInfo = new FileInfo(proposedOptions.ProcessFile);
             if (proposedOptions.CopyProcessFile == true && initialFileInfo.Exists)
             {
-                _daprLogger.LogDebug("CopyProcessFile is set, process file will be copied from initial directory");
+                Logger.LogDebug("CopyProcessFile is set, process file will be copied from initial directory");
 
                 if (!Directory.Exists(proposedOptions.BinDirectory))
                 {
                     // Create the target directory
-                    _daprLogger.LogInformation("Creating directory: {DaprBinDirectory}", proposedOptions.BinDirectory);
+                    Logger.LogInformation("Creating directory: {DaprBinDirectory}", proposedOptions.BinDirectory);
                     Directory.CreateDirectory(proposedOptions.BinDirectory);
                 }
 
                 if (string.Equals(runtimeFileInfo.FullName, initialFileInfo.FullName, StringComparison.OrdinalIgnoreCase))
                 {
                     // Path is the same as the runtime file, nothing to copy.
-                    _daprLogger.LogDebug("Not copying process file from {DaprProcessInitialFile} to {DaprProcessRuntimeFile} because files appear to be the same path", initialFile, proposedOptions.ProcessFile);
+                    Logger.LogDebug("Not copying process file from {DaprProcessInitialFile} to {DaprProcessRuntimeFile} because files appear to be the same path", initialFile, proposedOptions.ProcessFile);
                 }
                 else if (
                     runtimeFileInfo.Exists &&
@@ -450,12 +438,12 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
                     initialFileInfo.Length == runtimeFileInfo.Length)
                 {
                     // Initial file is considered same as runtime file, nothing to copy.
-                    _daprLogger.LogDebug("Not copying process file from {DaprProcessInitialFile} to {DaprProcessRuntimeFile} because files appear to be the same version", initialFile, proposedOptions.ProcessFile);
+                    Logger.LogDebug("Not copying process file from {DaprProcessInitialFile} to {DaprProcessRuntimeFile} because files appear to be the same version", initialFile, proposedOptions.ProcessFile);
                 }
                 else
                 {
                     // Copy the file
-                    _daprLogger.LogInformation("Copying process file from {DaprProcessInitialFile} to {DaprProcessRuntimeFile}", initialFile, proposedOptions.ProcessFile);
+                    Logger.LogInformation("Copying process file from {DaprProcessInitialFile} to {DaprProcessRuntimeFile}", initialFile, proposedOptions.ProcessFile);
                     File.Copy(initialFile, proposedOptions.ProcessFile, true);
                 }
             }
@@ -463,16 +451,16 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             // If the proposed file still does not exist, revert to initial file
             if (!File.Exists(proposedOptions.ProcessFile))
             {
-                _daprLogger.LogDebug("Process file {DaprProcessRuntimeFile} does not exist at expected location. Reverting to initial location {DaprProcessInitialFile}", proposedOptions.ProcessFile, initialFile);
+                Logger.LogDebug("Process file {DaprProcessRuntimeFile} does not exist at expected location. Reverting to initial location {DaprProcessInitialFile}", proposedOptions.ProcessFile, initialFile);
                 proposedOptions.ProcessFile = initialFile;
             }
 
             // Log out the expected location
-            _daprLogger.LogInformation("Dapr process binary: {DaprProcessFile}", proposedOptions.ProcessFile);
+            Logger.LogInformation("Dapr process binary: {DaprProcessFile}", proposedOptions.ProcessFile);
         }
         catch (Exception ex)
         {
-            _daprLogger.LogError(ex, "Error initializing directories and dapr binary location");
+            Logger.LogError(ex, "Error initializing directories and dapr binary location");
         }
     }
 
@@ -520,7 +508,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
                     };
 
                     AssignPorts(portBuilder);
-                    portBuilder.Build(existingOptions, proposedOptions, _daprLogger);
+                    portBuilder.Build(existingOptions, proposedOptions);
 
                     // Return an attachable process
                     return new AttachableProcess(existingProcess, existingOptions);

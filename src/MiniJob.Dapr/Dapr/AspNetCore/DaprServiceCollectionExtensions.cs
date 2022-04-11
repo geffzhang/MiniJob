@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using MiniJob.Dapr;
+﻿using Microsoft.Extensions.Hosting;
 using MiniJob.Dapr.AspNetCore;
+using MiniJob.Dapr.AspNetCore.Sidecar;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -21,23 +20,11 @@ public static class DaprServiceCollectionExtensions
 
     private static IDaprBuilder AddCoreServices(IServiceCollection services)
     {
-        services.AddHttpContextAccessor();
-        services.TryAddSingleton<IDaprSidecarHost, DaprSidecarHost>();
-        services.TryAddSingleton<DaprHttpContextHttpClientFactory>();
-        services.TryAddSingleton<IDaprProcessHttpClientFactory>(x => x.GetRequiredService<DaprHttpContextHttpClientFactory>());
-        services.TryAddSingleton<IDaprSidecarHttpClientFactory>(x => x.GetRequiredService<DaprHttpContextHttpClientFactory>());
-        services.TryAddSingleton<IDaprApiTokenProvider, RandomStringApiTokenProvider>();
-        services.TryAddSingleton<DaprApiTokenManager>();
-        services.TryAddSingleton<IDaprApiTokenAccessor>(x => x.GetRequiredService<DaprApiTokenManager>());
-        services.TryAddSingleton<IDaprApiTokenManager>(x => x.GetRequiredService<DaprApiTokenManager>());
         // If the service collection does not already contain a DaprSidecarHostedService implementation, don't try to add another one
         services.TryAddHostedService<DaprSidecarHostedService>();
 
         // Add the health checks and metrics
         services.AddHealthChecks().AddDaprSidecar();
-        services.AddSingleton<IPrometheusCollector, DaprSidecarMetricsCollector>();
-        services.AddSingleton<IPrometheusMetricFilter, DaprSidecarMetricFilter>();
-        services.TryAddSingleton<IDaprMetricsCollectorRegistry, PrometheusCollectorRegistry>();
 
         // Return the builder
         return new DaprBuilder(services);

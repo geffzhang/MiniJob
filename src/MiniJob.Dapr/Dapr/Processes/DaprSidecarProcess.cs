@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace MiniJob.Dapr.Processes;
 
@@ -119,7 +116,7 @@ internal class DaprSidecarProcess : DaprProcess<DaprSidecarOptions>, IDaprSideca
         .Add(ModeArgument, source.Mode)
         .Add(PlacementHostAddressArgument, source.PlacementHostAddress)
         .Add(ProfilePortArgument, source.ProfilePort, predicate: () => source.Profiling == true)
-        .Add(SentryAddressArgument, source.SentryAddress, predicate: () => !source.SentryAddress.IsNullOrWhiteSpaceEx())
+        .Add(SentryAddressArgument, source.SentryAddress, predicate: () => !source.SentryAddress.IsNullOrWhiteSpace())
         .Add(ConfigFileArgument, source.ConfigFile, predicate: () => File.Exists(source.ConfigFile))
         .Add(ComponentsPathArgument, source.ComponentsDirectory, predicate: () => Directory.Exists(source.ComponentsDirectory))
         .Add(source.CustomArguments, requiresValue: false);

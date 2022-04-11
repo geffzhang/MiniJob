@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using MiniJob.Dapr.Http;
+﻿using Dapr.Client;
+using Microsoft.Extensions.Logging;
 
 namespace MiniJob.Dapr.Processes;
 
@@ -12,7 +12,7 @@ public abstract class DaprProcessHost<TOptions> : IDaprProcessHost
 
     protected DaprProcessHost(
         Func<IDaprProcess<TOptions>> createDaprProcess,
-        IDaprProcessHttpClientFactory daprHttpClientFactory,
+        DaprClient daprHttpClientFactory,
         ILogger logger)
     {
         _createDaprProcess = createDaprProcess ?? throw new ArgumentNullException(nameof(createDaprProcess));
@@ -21,7 +21,7 @@ public abstract class DaprProcessHost<TOptions> : IDaprProcessHost
     }
 
     // Internal for testing
-    protected internal IDaprProcessHttpClientFactory DaprHttpClientFactory { get; }
+    protected internal DaprClient DaprHttpClientFactory { get; }
 
     public DaprProcessInfo GetProcessInfo() => Process?.GetProcessInfo() ?? DaprProcessInfo.Unknown;
 
@@ -63,7 +63,7 @@ public abstract class DaprProcessHost<TOptions> : IDaprProcessHost
 
     public async Task<DaprHealthResult> GetHealthAsync(CancellationToken cancellationToken)
     {
-        var client = DaprHttpClientFactory.CreateDaprHttpClient();
+        var client = DaprClient.CreateInvokeHttpClient();
         var uri = Process?.LastSuccessfulOptions?.GetHealthUri();
         if (uri == null || client == null)
         {
@@ -77,7 +77,7 @@ public abstract class DaprProcessHost<TOptions> : IDaprProcessHost
 
     public async Task<int> WriteMetricsAsync(Stream stream, CancellationToken cancellationToken)
     {
-        var client = DaprHttpClientFactory.CreateDaprHttpClient();
+        var client = DaprClient.CreateInvokeHttpClient();
         var uri = Process?.LastSuccessfulOptions?.GetMetricsUri();
         if (uri == null || client == null)
         {
