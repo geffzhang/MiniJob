@@ -1,4 +1,4 @@
-﻿namespace MiniJob.Dapr.Process;
+﻿namespace MiniJob.Dapr.Processes;
 
 public interface IDaprProcessHost<TOptions> : IDaprProcessHost
     where TOptions : Options.DaprProcessOptions

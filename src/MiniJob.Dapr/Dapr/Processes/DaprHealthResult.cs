@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace MiniJob.Dapr.Process;
+namespace MiniJob.Dapr.Processes;
 
 /// <summary>
 /// 对Dapr进程执行的健康检查的结果

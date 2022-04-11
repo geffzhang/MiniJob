@@ -1,4 +1,4 @@
-﻿namespace MiniJob.Dapr.Process;
+﻿namespace MiniJob.Dapr.Processes;
 
 /// <summary>
 /// Dapr进程信息
