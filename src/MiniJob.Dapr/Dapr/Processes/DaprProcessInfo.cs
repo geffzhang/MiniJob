@@ -34,8 +34,8 @@ public class DaprProcessInfo
     public bool IsAttached { get; }
 
     public string Description =>
-        IsRunning ? (!string.IsNullOrEmpty(Version) ? $"Dapr process '{Name}' running, version {Version}" : $"Dapr process '{Name}' running, unverified version") :
-        IsAttached ? (!string.IsNullOrEmpty(Version) ? $"Dapr process '{Name}' attached, version {Version}" : $"Dapr process '{Name}' attached, unverified version") :
+        IsRunning ? (!Version.IsNullOrEmpty() ? $"Dapr process '{Name}' running, version {Version}" : $"Dapr process '{Name}' running, unverified version") :
+        IsAttached ? (!Version.IsNullOrEmpty() ? $"Dapr process '{Name}' attached, version {Version}" : $"Dapr process '{Name}' attached, unverified version") :
         $"Dapr process '{Name}' not available, status is {Status}";
 
     public override string ToString() => Description;

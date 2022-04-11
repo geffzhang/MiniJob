@@ -1,4 +1,4 @@
-﻿using MiniJob.Dapr.Process;
+﻿using MiniJob.Dapr.Processes;
 
 namespace MiniJob.Dapr;
 
