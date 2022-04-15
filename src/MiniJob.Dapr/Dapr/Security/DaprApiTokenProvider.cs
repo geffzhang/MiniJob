@@ -2,7 +2,7 @@
 
 namespace MiniJob.Dapr.Security;
 
-public class RandomStringApiTokenProvider : IDaprApiTokenProvider, ISingletonDependency
+public class DaprApiTokenProvider : IDaprApiTokenProvider, ISingletonDependency
 {
     public string GetAppApiToken() => Guid.NewGuid().ToString();
 

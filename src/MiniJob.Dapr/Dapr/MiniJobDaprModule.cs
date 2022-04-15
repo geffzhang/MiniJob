@@ -25,7 +25,7 @@ public class MiniJobDaprModule : AbpModule
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
         // 自动注册Actor
-        context.Services.AddConventionalRegistrar(new ActorConventionalRegistrar());
+        //context.Services.AddConventionalRegistrar(new ActorConventionalRegistrar());
 
         var configuration = context.Services.GetConfiguration();
         Configure<MiniJobDaprOptions>(configuration.GetSection(MiniJobDaprOptions.Dapr));
@@ -51,15 +51,18 @@ public class MiniJobDaprModule : AbpModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.TryAddSingleton<ActorActivatorFactory, MiniJobActorActivatorFactory>();
-        context.Services.AddActors(options => { });
+        //context.Services.AddActors(options => { });
 
-        Configure<AbpEndpointRouterOptions>(options =>
-        {
-            options.EndpointConfigureActions.Add(endpointContext =>
-            {
-                endpointContext.Endpoints.MapActorsHandlers();
-            });
-        });
+        var configuration = context.Services.GetConfiguration();
+        context.Services.AddMiniJobDapr(configuration);
+
+        //Configure<AbpEndpointRouterOptions>(options =>
+        //{
+        //    options.EndpointConfigureActions.Add(endpointContext =>
+        //    {
+        //        endpointContext.Endpoints.MapActorsHandlers();
+        //    });
+        //});
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)

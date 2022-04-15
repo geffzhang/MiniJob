@@ -5,14 +5,11 @@ namespace MiniJob.Dapr.Security;
 [ExposeServices(typeof(IDaprApiTokenAccessor), IncludeDefaults = true, IncludeSelf = true)]
 public class DaprApiTokenManager : IDaprApiTokenManager, ISingletonDependency
 {
-    private readonly IDaprApiTokenProvider _tokenProvider;
     private SensitiveString _daprApiToken;
     private SensitiveString _appApiToken;
 
     public DaprApiTokenManager(IDaprApiTokenProvider tokenProvider)
     {
-        _tokenProvider = tokenProvider;
-
         // Set the default values
         SetDaprApiToken(tokenProvider.GetDaprApiToken());
         SetAppApiToken(tokenProvider.GetAppApiToken());
