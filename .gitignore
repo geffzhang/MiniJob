@@ -266,3 +266,4 @@ src/MiniJob.Blazor.Server.Tiered/Logs/*
 **/wwwroot/libs/*
 package-lock.json
 tempkey.jwk
+yarn.lock

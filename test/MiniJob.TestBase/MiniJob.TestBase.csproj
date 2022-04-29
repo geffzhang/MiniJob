@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AspNetCore.TestBase" Version="5.2.0" />
-    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="5.2.0" />
-    <PackageReference Include="Volo.Abp.TestBase" Version="5.2.0" />
+    <PackageReference Include="Volo.Abp.AspNetCore.TestBase" Version="5.2.1" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="5.2.1" />
+    <PackageReference Include="Volo.Abp.TestBase" Version="5.2.1" />
   </ItemGroup>
 
   <ItemGroup>
