@@ -1,8 +1,9 @@
 ﻿using System.Net.NetworkInformation;
+using Volo.Abp.DependencyInjection;
 
 namespace MiniJob.Dapr.Processes;
 
-public class PortAvailabilityChecker : IPortAvailabilityChecker
+public class PortAvailabilityChecker : IPortAvailabilityChecker, ITransientDependency
 {
     public int GetAvailablePort(int startingPort, IEnumerable<int> reservedPorts = null)
     {

@@ -22,8 +22,6 @@ internal class PortAssignmentBuilder<TOptions>
 
     private readonly List<PortInfo> _ports = new List<PortInfo>();
 
-    protected ILogger Logger { get; set; }
-
     public PortAssignmentBuilder(IPortAvailabilityChecker portAvailabilityChecker)
     {
         PortAvailabilityChecker = portAvailabilityChecker;
@@ -50,7 +48,7 @@ internal class PortAssignmentBuilder<TOptions>
         return this;
     }
 
-    public void Build(TOptions proposedOptions, TOptions lastSuccessfulOptions)
+    public void Build(TOptions proposedOptions, TOptions lastSuccessfulOptions, ILogger logger)
     {
         // Determine if previously assigned ports shoulld be retained
         var retainPreviousPorts = (proposedOptions.RetainPortsOnRestart ?? true) && lastSuccessfulOptions != null;
@@ -68,7 +66,7 @@ internal class PortAssignmentBuilder<TOptions>
             // If we need to retain previous ports and port has not been explicitly specified then copy the value over and add to the reserved list.
             if (retainPreviousPorts && lastSuccessfulValue.HasValue && !proposedValue.HasValue)
             {
-                Logger.LogDebug("Assigning previously reserved port {DaprPortNumber} for option {DaprPortName}", lastSuccessfulValue, propertyName);
+                logger.LogDebug("Assigning previously reserved port {DaprPortNumber} for option {DaprPortName}", lastSuccessfulValue, propertyName);
                 propertyInfo.SetValue(proposedOptions, lastSuccessfulValue, null);
                 reservedPorts.Add(lastSuccessfulValue.Value);
                 continue;
@@ -77,14 +75,14 @@ internal class PortAssignmentBuilder<TOptions>
             // If port is already defined, then use it
             if (proposedValue.HasValue)
             {
-                Logger.LogDebug("Assigning preferred port {DaprPortNumber} for option {DaprPortName}", proposedValue, propertyName);
+                logger.LogDebug("Assigning preferred port {DaprPortNumber} for option {DaprPortName}", proposedValue, propertyName);
                 reservedPorts.Add(proposedValue.Value);
                 continue;
             }
 
             if (AlwaysUseStartingPort || PortAvailabilityChecker == null)
             {
-                Logger.LogDebug("Assigning default port {DaprPortNumber} for option {DaprPortName}", port.StartingPort, propertyName);
+                logger.LogDebug("Assigning default port {DaprPortNumber} for option {DaprPortName}", port.StartingPort, propertyName);
                 propertyInfo.SetValue(proposedOptions, port.StartingPort, null);
             }
             else
@@ -93,7 +91,7 @@ internal class PortAssignmentBuilder<TOptions>
                 var newPort = PortAvailabilityChecker.GetAvailablePort(port.StartingPort, reservedPorts);
                 propertyInfo.SetValue(proposedOptions, newPort, null);
                 reservedPorts.Add(newPort);
-                Logger.LogDebug("Reserving new port {DaprPortNumber} for option {DaprPortName}", newPort, propertyName);
+                logger.LogDebug("Reserving new port {DaprPortNumber} for option {DaprPortName}", newPort, propertyName);
             }
         }
     }

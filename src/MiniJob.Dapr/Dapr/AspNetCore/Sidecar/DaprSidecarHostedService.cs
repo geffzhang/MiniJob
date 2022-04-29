@@ -46,7 +46,7 @@ public class DaprSidecarHostedService : DaprHostedService<IDaprSidecarHost, Dapr
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    // Get all server addresses as parsed Uris
+                    // 获取所有服务器地址并解析为Uris
                     var serverAddresses = server.Features?
                         .Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>()?
                         .Addresses?
@@ -57,31 +57,29 @@ public class DaprSidecarHostedService : DaprHostedService<IDaprSidecarHost, Dapr
 
                     if (serverAddresses.Length > 0)
                     {
-                        // Find the best match based on the scheme and if AppSsl is specified.
-                        // Default to the first entry
+                        // 如果指定了AppSsl，则根据 scheme 找到最佳匹配
+                        // 默认为第一个条目
                         var selectedAddress = serverAddresses[0];
                         foreach (var address in serverAddresses)
                         {
                             if ((options.Sidecar.AppSsl == true && address.Scheme == Uri.UriSchemeHttps) ||
                                 (options.Sidecar.AppSsl == false && address.Scheme == Uri.UriSchemeHttp))
                             {
-                                // Found an explicit match based on the AppSsl flag. Use it
                                 selectedAddress = address;
                                 break;
                             }
                             else if (address.Scheme == Uri.UriSchemeHttp)
                             {
-                                // First non-SSL address. Set it as preferred match but keep looping to find a better one.
                                 selectedAddress = address;
                             }
                         }
 
-                        // Address found, set the port
+                        // 地址找到，设置端口
                         options.Sidecar.AppPort = selectedAddress.Port;
                         break;
                     }
 
-                    // Sleep - not pretty, but need to wait for hosting
+                    // 等待 hosting 启动
                     Thread.Sleep(10);
                 }
             }

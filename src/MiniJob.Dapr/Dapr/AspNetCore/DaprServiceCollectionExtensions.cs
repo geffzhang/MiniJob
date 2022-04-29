@@ -11,7 +11,7 @@ public static class DaprServiceCollectionExtensions
     public static IServiceCollection TryAddHostedService<TImplementation>(this IServiceCollection services)
         where TImplementation : class, IHostedService
     {
-        // Only add the service if an existing implementation does not exist
+        // 只有在现有实现不存在的情况下才添加服务
         if (!services.HasAssignableService<IHostedService, TImplementation>())
         {
             services.AddHostedService<TImplementation>();
@@ -21,11 +21,11 @@ public static class DaprServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the Dapr Sidecar process to the service container.
+    /// 将Dapr Sidecar进程添加到服务容器
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configureAction">An optional action to configure the component.</param>
-    /// <returns>A <see cref="IDaprSidekickBuilder"/> for further configuration.</returns>
+    /// <param name="services">服务容器</param>
+    /// <param name="configureAction">配置组件的可选操作</param>
+    /// <returns><see cref="IDaprBuilder"/> 用于进一步配置</returns>
     public static IDaprBuilder AddMiniJobDapr(this IServiceCollection services, Action<DaprOptions> configureAction = null)
     {
         var builder = AddCoreServices(services);
@@ -44,12 +44,12 @@ public static class DaprServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the Dapr Sidecar process to the service container.
+    /// 将Dapr Sidecar进程添加到服务容器
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">A <see cref="IConfiguration"/> instance for configuring the component.</param>
-    /// <param name="postConfigureAction">An optional action to configure the component after initial configuration is applied.</param>
-    /// <returns>A <see cref="IDaprSidekickBuilder"/> for further configuration.</returns>
+    /// <param name="services">服务容器</param>
+    /// <param name="configuration">配置组件的 <see cref="IConfiguration"/> 实例</param>
+    /// <param name="postConfigureAction">应用初始配置后配置组件的可选操作</param>
+    /// <returns><see cref="IDaprBuilder"/> 用于进一步配置</returns>
     public static IDaprBuilder AddMiniJobDapr(this IServiceCollection services, IConfiguration configuration, Action<DaprOptions> postConfigureAction = null)
     {
         if (configuration == null)
@@ -57,20 +57,19 @@ public static class DaprServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
         }
 
-        // Try to get primary section "MiniJobDapr" first
-        // Otherwise fall back to section "Dapr"
+        // 首先尝试获取 "MiniJobDapr" 配置节，如果不存在则回退到 "Dapr" 配置节
         var sectionName = configuration.GetSection(DaprOptions.SectionName).Exists() ? DaprOptions.SectionName : "Dapr";
         return AddMiniJobDapr(services, sectionName, configuration, postConfigureAction);
     }
 
     /// <summary>
-    /// Adds the Dapr Sidecar process to the service container using the configuration section specified by <paramref name="name"/>.
+    /// 使用 <paramref name="name"/> 指定的配置节将Dapr Sidecar进程添加到服务容器
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="name">The name of the configuration section containing the settings in <paramref name="configuration"/>.</param>
-    /// <param name="configuration">A <see cref="IConfiguration"/> instance for configuring the component.</param>
-    /// <param name="postConfigureAction">An optional action to configure the component after initial configuration is applied.</param>
-    /// <returns>A <see cref="IDaprSidekickBuilder"/> for further configuration.</returns>
+    /// <param name="services">服务容器</param>
+    /// <param name="name">配置节名称</param>
+    /// <param name="configuration">配置组件的 <see cref="IConfiguration"/> 实例</param>
+    /// <param name="postConfigureAction">应用初始配置后配置组件的可选操作</param>
+    /// <returns><see cref="IDaprBuilder"/> 用于进一步配置</returns>
     public static IDaprBuilder AddMiniJobDapr(this IServiceCollection services, string name, IConfiguration configuration, Action<DaprOptions> postConfigureAction = null)
     {
         if (configuration == null)
@@ -80,8 +79,7 @@ public static class DaprServiceCollectionExtensions
 
         var builder = AddCoreServices(services);
 
-        // Create a new configuration based on the initial configuration but with the additional
-        // support for setting/overriding top-level properties using environment variables.
+        // 在初始配置的基础上创建一个新的配置，但要支持使用环境变量设置/覆盖顶级属性
         var daprConfig = new ConfigurationBuilder()
             .AddConfiguration(configuration.GetSection(name))
             .AddEnvironmentVariables(DaprOptions.EnvironmentVariablePrefix)
@@ -93,10 +91,10 @@ public static class DaprServiceCollectionExtensions
             services.PostConfigure(postConfigureAction);
         }
 
-        // The Dapr Sidecar can take 5 seconds to shutdown, which is the default shutdown time for IHostedService.
-        // So set the default shutdown timeout to 10 seconds. This can be overridden in configuration using HostOptions.
+        // Dapr Sidecar需要5秒才能关闭，这是 IHostedService 的默认关闭时间
+        // 因此，将默认关机超时设置为10秒。这可以在配置中使用HostOptions覆盖
         // See https://andrewlock.net/extending-the-shutdown-timeout-setting-to-ensure-graceful-ihostedservice-shutdown/
-        services.Configure<HostOptions>(opts => opts.ShutdownTimeout = System.TimeSpan.FromSeconds(10));
+        services.Configure<HostOptions>(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(10));
 
         return builder;
     }
@@ -115,7 +113,7 @@ public static class DaprServiceCollectionExtensions
 
     public static bool HasAssignableService<TService, TImplementation>(this IServiceCollection services)
     {
-        // Check to see if any existing service of type TImplementation (or a subclass) has been registered.
+        // 检查是否已经注册了TImplementation类型(或子类)的现有服务
         foreach (var service in services)
         {
             if (service.ServiceType != typeof(TService))
@@ -125,7 +123,7 @@ public static class DaprServiceCollectionExtensions
 
             if (typeof(TImplementation).IsAssignableFrom(service.ImplementationType))
             {
-                // Already assigned
+                // 已经分配
                 return true;
             }
         }

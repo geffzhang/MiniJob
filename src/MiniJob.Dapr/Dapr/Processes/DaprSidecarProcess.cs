@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Reflection;
+using Volo.Abp.DependencyInjection;
 
 namespace MiniJob.Dapr.Processes;
 
-internal class DaprSidecarProcess : DaprProcess<DaprSidecarOptions>, IDaprSidecarProcess
+internal class DaprSidecarProcess : DaprProcess<DaprSidecarOptions>, IDaprSidecarProcess, ITransientDependency
 {
     private const string AllowedOriginsArgument = "allowed-origins";
     private const string AppIdArgument = "app-id";
@@ -29,9 +30,11 @@ internal class DaprSidecarProcess : DaprProcess<DaprSidecarOptions>, IDaprSideca
     private const string ProfilePortArgument = "profile-port";
     private const string SentryAddressArgument = "sentry-address";
 
-    public DaprSidecarProcess()
-        : base(DaprConstants.DaprSidecarProcessName)
+    protected override string DefaultProcessName => DaprConstants.DaprSidecarProcessName;
+
+    public DaprSidecarProcess(ILogger<DaprSidecarProcess> logger)
     {
+        Logger = logger;
     }
 
     protected override DaprSidecarOptions GetProcessOptions(DaprOptions daprOptions)

@@ -7,12 +7,11 @@ namespace MiniJob.Dapr.AspNetCore.Sentry;
 public class DaprSentryHost : DaprProcessHost<DaprSentryOptions>, IDaprSentryHost
 {
     public DaprSentryHost(
-        IDaprProcessFactory daprProcessFactory,
-        DaprClient daprHttpClientFactory,
+        IDaprSentryProcess daprSentryProcess,
+        DaprClient daprClient,
         ILoggerFactory loggerFactory)
-        : base(() =>
-            daprProcessFactory.CreateDaprSentryProcess(),
-            daprHttpClientFactory,
+        : base(daprSentryProcess,
+            daprClient,
             loggerFactory.CreateLogger<DaprSentryHost>())
     {
     }

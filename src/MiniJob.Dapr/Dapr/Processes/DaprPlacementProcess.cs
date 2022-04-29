@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Volo.Abp.DependencyInjection;
 
 namespace MiniJob.Dapr.Processes;
 
-internal class DaprPlacementProcess : DaprProcess<DaprPlacementOptions>, IDaprPlacementProcess
+internal class DaprPlacementProcess : DaprProcess<DaprPlacementOptions>, IDaprPlacementProcess, ITransientDependency
 {
     private const string CertChainArgument = "certchain";
     private const string EnableMetricsArgument = "enable-metrics";
@@ -18,9 +19,11 @@ internal class DaprPlacementProcess : DaprProcess<DaprPlacementOptions>, IDaprPl
     private const string ReplicationFactorArgument = "replicationfactor";
     private const string TlsEnabledArgument = "tls-enabled";
 
-    public DaprPlacementProcess()
-        : base(DaprConstants.DaprPlacementProcessName)
+    protected override string DefaultProcessName => DaprConstants.DaprPlacementProcessName;
+
+    public DaprPlacementProcess(ILogger<DaprPlacementProcess> logger)
     {
+        Logger = logger;
     }
 
     protected override DaprPlacementOptions GetProcessOptions(DaprOptions daprOptions)

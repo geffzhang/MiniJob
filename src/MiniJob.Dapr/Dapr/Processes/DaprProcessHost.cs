@@ -7,15 +7,15 @@ public abstract class DaprProcessHost<TOptions> : IDaprProcessHost
         where TOptions : Options.DaprProcessOptions
 {
     private readonly object _processLock = new object();
-    private readonly Func<IDaprProcess<TOptions>> _createDaprProcess;
     private readonly ILogger _logger;
+    private readonly IDaprProcess<TOptions> _daprProcess;
 
     protected DaprProcessHost(
-        Func<IDaprProcess<TOptions>> createDaprProcess,
+        IDaprProcess<TOptions> daprProcess,
         DaprClient daprHttpClientFactory,
         ILogger logger)
     {
-        _createDaprProcess = createDaprProcess ?? throw new ArgumentNullException(nameof(createDaprProcess));
+        _daprProcess = daprProcess ?? throw new ArgumentNullException(nameof(daprProcess));
         DaprHttpClientFactory = daprHttpClientFactory ?? throw new ArgumentNullException(nameof(daprHttpClientFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -37,7 +37,7 @@ public abstract class DaprProcessHost<TOptions> : IDaprProcessHost
             Stop(cancellationToken);
 
             // Start the new process.
-            Process = _createDaprProcess();
+            Process = _daprProcess;
             Process.Starting += ProcessStarting;
             Process.Stopping += ProcessStopping;
             return Process.Start(optionsAccessor, cancellationToken);

@@ -7,8 +7,6 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
         where TOptions : Options.DaprProcessOptions, new()
 {
     private readonly object _lock = new object();
-    private readonly string _defaultProcessName;
-    private readonly string _defaultExeName;
     private Func<DaprOptions> _startOptionsAccessor; // Returns latest startup options
     private TOptions _pendingOptions; // Options used to start process, stored temporarily until startup complete.
     protected ILogger Logger { get; set; }
@@ -16,11 +14,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
     private IProcess _underlyingProcess;
     private Task _startupTask;
 
-    protected DaprProcess(string defaultProcessName)
-    {
-        _defaultProcessName = defaultProcessName;
-        _defaultExeName = _defaultProcessName + ".exe";
-    }
+    protected abstract string DefaultProcessName { get; }
 
     public TOptions LastSuccessfulOptions { get; private set; }
 
@@ -192,7 +186,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
 
             // Start with a new instance
             var proposedOptions = GetProcessOptions(_startOptionsAccessor?.Invoke() ?? new DaprOptions());
-            proposedOptions.ProcessName ??= _defaultProcessName;
+            proposedOptions.ProcessName ??= DefaultProcessName;
 
             // If not enabled then exit
             if (proposedOptions.Enabled == false)
@@ -216,7 +210,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
             // Assign ports, retaining any from last used options if required.
             var portBuilder = new PortAssignmentBuilder<TOptions>();
             AssignPorts(portBuilder);
-            portBuilder.Build(proposedOptions, LastSuccessfulOptions);
+            portBuilder.Build(proposedOptions, LastSuccessfulOptions, Logger);
 
             // Initialize expected locations and directories
             InitializeDirectories(proposedOptions);
@@ -506,9 +500,9 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
                     {
                         AlwaysUseStartingPort = true
                     };
-
+                    
                     AssignPorts(portBuilder);
-                    portBuilder.Build(existingOptions, proposedOptions);
+                    portBuilder.Build(existingOptions, proposedOptions, Logger);
 
                     // Return an attachable process
                     return new AttachableProcess(existingProcess, existingOptions);
@@ -521,7 +515,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
     }
 
     // Return the name of the running process, or the friendly expected name if not currently running.
-    private string Name => _underlyingProcess?.Name ?? _pendingOptions?.ProcessName ?? _defaultProcessName;
+    private string Name => _underlyingProcess?.Name ?? _pendingOptions?.ProcessName ?? DefaultProcessName;
 
     private int? Id => _underlyingProcess?.Id;
 

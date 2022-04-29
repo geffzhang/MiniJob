@@ -12,7 +12,8 @@ namespace MiniJob.Dapr.Actors;
 /// </summary>
 public class ActorConventionalRegistrar : DefaultConventionalRegistrar
 {
-    private static readonly MethodInfo daprRegisterMethodInfo = typeof(ActorRegistrationCollection).GetMethod("RegisterActor");
+    private static readonly MethodInfo daprRegisterMethodInfo = 
+        typeof(ActorRegistrationCollection).GetMethod("RegisterActor", new Type[] { typeof(Action<ActorRegistration>) });
 
     public override void AddType(IServiceCollection services, Type type)
     {

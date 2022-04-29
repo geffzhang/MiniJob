@@ -1,6 +1,9 @@
-﻿namespace MiniJob.Dapr.Processes;
+﻿using Microsoft.Extensions.Logging;
+using Volo.Abp.DependencyInjection;
 
-internal class DaprSentryProcess : DaprProcess<DaprSentryOptions>, IDaprSentryProcess
+namespace MiniJob.Dapr.Processes;
+
+internal class DaprSentryProcess : DaprProcess<DaprSentryOptions>, IDaprSentryProcess, ITransientDependency
 {
     private const string ConfigFileArgument = "config";
     private const string EnableMetricsArgument = "enable-metrics";
@@ -10,9 +13,11 @@ internal class DaprSentryProcess : DaprProcess<DaprSentryOptions>, IDaprSentryPr
     private const string MetricsPortArgument = "metrics-port";
     private const string TrustDomainArgument = "trust-domain";
 
-    public DaprSentryProcess()
-        : base(DaprConstants.DaprSentryProcessName)
+    protected override string DefaultProcessName => DaprConstants.DaprSentryProcessName;
+
+    public DaprSentryProcess(ILogger<DaprSentryProcess> logger)
     {
+        Logger = logger;
     }
 
     protected override DaprSentryOptions GetProcessOptions(DaprOptions daprOptions)

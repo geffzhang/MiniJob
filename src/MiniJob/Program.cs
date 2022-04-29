@@ -19,11 +19,10 @@ public class Program
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
             .Enrich.FromLogContext()
 #if DEBUG
-            .WriteTo.Async(c => c.File("Logs/logs.txt", rollingInterval: RollingInterval.Day))
-            .WriteTo.Async(c => c.Console());
-#else
-            .WriteTo.Async(c => c.File("Logs/logs.txt"));
+            .WriteTo.Async(c => c.Console())
 #endif
+            .WriteTo.Async(c => c.File("Logs/logs.txt", rollingInterval: RollingInterval.Day));
+
         if (IsMigrateDatabase(args))
         {
             loggerConfiguration.MinimumLevel.Override("Volo.Abp", LogEventLevel.Warning);
@@ -50,7 +49,7 @@ public class Program
             }
 
             Log.Information("Starting MiniJob.");
-            await app.RunAsync("https://localhost:44328");
+            await app.RunAsync();
             return 0;
         }
         catch (Exception ex)

@@ -7,12 +7,11 @@ namespace MiniJob.Dapr.AspNetCore.Placement;
 public sealed class DaprPlacementHost : DaprProcessHost<DaprPlacementOptions>, IDaprPlacementHost
 {
     public DaprPlacementHost(
-        IDaprProcessFactory daprProcessFactory,
-        DaprClient daprHttpClientFactory,
+        IDaprPlacementProcess daprPlacementProcess,
+        DaprClient daprClient,
         ILoggerFactory loggerFactory)
-        : base(() =>
-            daprProcessFactory.CreateDaprPlacementProcess(),
-            daprHttpClientFactory,
+        : base(daprPlacementProcess,
+            daprClient,
             loggerFactory.CreateLogger<DaprPlacementHost>())
     {
     }

@@ -12,14 +12,13 @@ public class DaprSidecarHost : DaprProcessHost<DaprSidecarOptions>, IDaprSidecar
     private readonly IEnumerable<IDaprSidecarProcessInterceptor> _daprSidecarInterceptors;
 
     public DaprSidecarHost(
-        IDaprProcessFactory daprProcessFactory,
-        DaprClient daprHttpClientFactory,
+        IDaprSidecarProcess daprSidecarProcess,
+        DaprClient daprClient,
         IDaprApiTokenManager daprApiTokenManager,
         ILoggerFactory loggerFactory,
         IEnumerable<IDaprSidecarProcessInterceptor> daprSidecarInterceptors = null)
-        : base(() =>
-            daprProcessFactory.CreateDaprSidecarProcess(),
-            daprHttpClientFactory,
+        : base(daprSidecarProcess,
+            daprClient,
             loggerFactory.CreateLogger<DaprSidecarHost>())
     {
         _daprApiTokenManager = daprApiTokenManager;
