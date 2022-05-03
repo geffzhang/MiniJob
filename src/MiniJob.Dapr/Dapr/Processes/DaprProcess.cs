@@ -75,7 +75,6 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
 
             // Unassign stored variables
             _restartTimer?.Stop();
-            Logger = null;
             _pendingOptions = default;
             _underlyingProcess = null;
         }

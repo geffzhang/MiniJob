@@ -76,6 +76,7 @@ public class DaprSidecarHostedService : DaprHostedService<IDaprSidecarHost, Dapr
 
                         // 地址找到，设置端口
                         options.Sidecar.AppPort = selectedAddress.Port;
+                        options.Sidecar.AppSsl = selectedAddress.Scheme == Uri.UriSchemeHttps;
                         break;
                     }
 

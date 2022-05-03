@@ -12,6 +12,9 @@ public class DaprOptions : Options.DaprProcessOptions
     {
         // 为所有组件设置默认值
         LogLevel = DaprConstants.DaprLogger.DebugLevel;
+        Sidecar = new DaprSidecarOptions();
+        Placement = new DaprPlacementOptions();
+        Sentry = new DaprSentryOptions();
     }
 
     public DaprSidecarOptions Sidecar { get; set; }

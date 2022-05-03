@@ -292,14 +292,11 @@ public class MiniJobModule : AbpModule
     {
         var app = context.GetApplicationBuilder();
 
-        // 应用完全启动后启动所有注册的调度器
-        // 要先启动Sidecar才能启动调度器，而ApplicationStarted的注册顺序与执行顺序相反，
-        // 所以启动调度器方法要先注册，故应放在OnPreApplicationInitialization方法中注册
-        //var lifeTime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
-        //lifeTime.ApplicationStarted.Register(async () =>
-        //{
-        //    await app.ApplicationServices.GetRequiredService<ISchedulerManager>().StartAsync();
-        //});
+        var lifeTime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+        lifeTime.ApplicationStarted.Register(async () =>
+        {
+            await app.ApplicationServices.GetRequiredService<ISchedulerManager>().StartAsync();
+        });
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
@@ -347,6 +344,6 @@ public class MiniJobModule : AbpModule
 
     public override async Task OnApplicationShutdownAsync(ApplicationShutdownContext context)
     {
-        // context.ServiceProvider.GetRequiredService<ISchedulerManager>().StopAsync();
+        await context.ServiceProvider.GetRequiredService<ISchedulerManager>().StopAsync();
     }
 }
