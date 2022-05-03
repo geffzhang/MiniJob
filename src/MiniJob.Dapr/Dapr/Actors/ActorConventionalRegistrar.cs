@@ -7,7 +7,7 @@ using Volo.Abp.DependencyInjection;
 namespace MiniJob.Dapr.Actors;
 
 /// <summary>
-/// 自动注册继承自 <see cref="IActor"/> 的Actor
+/// 自动注册继承自 <see cref="IActor"/> 的Actor(调用<see cref="ActorRegistrationCollection.RegisterActor{TActor}(Action{ActorRegistration})"/>)
 /// <para>添加 <see cref="DisableAutoRegisterActorAttribute"/> 特性禁用自动注册</para>
 /// </summary>
 public class ActorConventionalRegistrar : DefaultConventionalRegistrar

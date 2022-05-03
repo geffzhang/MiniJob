@@ -355,11 +355,7 @@ internal abstract class DaprProcess<TOptions> : IDaprProcess<TOptions>, IDaprPro
         if (string.IsNullOrEmpty(proposedOptions.InitialDirectory))
         {
             // Not specified, set to the default "dapr init" location %USERPROFILE%/.dapr ($HOME/.dapr on Linux)
-#if NET35
-                var profilePath = Environment.GetEnvironmentVariable("USERPROFILE");
-#else
             var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-#endif
             proposedOptions.InitialDirectory = Path.Combine(profilePath, ".dapr");
         }
 
